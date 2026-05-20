@@ -1,17 +1,19 @@
-# my_app
+# Lake Command In Depth
 
-A new Flutter project.
+This repository contains the current Flutter app and local Android workflow notes
+for the Lake Command project.
+
+## Project Layout
+
+- `starter_app/` - the active Flutter application
+- `ANDROID_FLUTTER_COMMANDS.md` - local Android and Flutter command notes
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+From the repo root:
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+cd starter_app
+flutter pub get
+flutter run
+```
