@@ -1,17 +1,34 @@
-# starter_app
+# Lake Command App
 
-A new Flutter project.
+This Flutter app powers the current Lake Command In Depth experience.
 
-## Getting Started
+It opens with a guided splash screen, then moves into a structured set of
+menus for trip planning, lake overview, species guidance, departures, and
+supporting on-the-water decision flows.
 
-This project is a starting point for a Flutter application.
+## Main Areas
 
-A few resources to get you started if this is your first Flutter project:
+- Splash entry into the menu system
+- Lake overview and general fish location guidance
+- Species-specific menu branches
+- Trip controls and recommended route flow
+- Supporting trip intel and operational screens
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Run Locally
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter pub get
+flutter run
+```
+
+## Test
+
+```bash
+flutter test
+```
+
+## Notes
+
+- Main app entry: `lib/main.dart`
+- Widget coverage: `test/widget_test.dart`
+- Project checklist: `DATA_PROVIDER_CHECKLIST.md`
