@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'chart_plotter_screen.dart';
 import 'models/observation_models.dart';
 import 'services/mock_data_repository.dart';
 import 'services/scenario_aggregator.dart';
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     const Color aqua = Color(0xFF70C4D4);
 
     return MaterialApp(
-      title: 'Lake Michigan Blueprint',
+      title: 'Lake Command In Depth',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -89,7 +90,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const BlueprintApp(),
+      home: const ChartPlotterScreen(),
     );
   }
 }
