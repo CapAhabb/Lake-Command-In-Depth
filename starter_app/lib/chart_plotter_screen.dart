@@ -15,13 +15,13 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
   double lon = -86.415;
   
   final Map<String, LayerControl> layerControls = {
-    'Contours': LayerControl(enabled: true, gain: 0.8),
-    'Depth Shading': LayerControl(enabled: true, gain: 0.4),
-    'Bait Density': LayerControl(enabled: false, gain: 0.6),
-    'Species': LayerControl(enabled: true, gain: 0.7),
-    'Current': LayerControl(enabled: false, gain: 0.5),
-    'Water Temp': LayerControl(enabled: false, gain: 0.6),
-    'Weather': LayerControl(enabled: false, gain: 0.5),
+    'CONTOURS': LayerControl(enabled: true, gain: 0.8),
+    'DEPTH SHADING': LayerControl(enabled: true, gain: 0.4),
+    'BAIT DENSITY': LayerControl(enabled: false, gain: 0.6),
+    'SPECIES': LayerControl(enabled: true, gain: 0.7),
+    'CURRENT': LayerControl(enabled: false, gain: 0.5),
+    'WATER TEMP': LayerControl(enabled: false, gain: 0.6),
+    'WEATHER': LayerControl(enabled: false, gain: 0.5),
   };
   
   bool toolboxVisible = false;
@@ -87,7 +87,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
               child: const _CompassWidget(),
             ),
             
-            // Boat position indicator
+            // Boat position indicator (smaller as requested)
             Center(
               child: _BoatIndicator(heading: boatHeading),
             ),
@@ -646,16 +646,16 @@ class _ToolboxPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 260,
+      width: 240,
       margin: const EdgeInsets.only(left: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1F28),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF284451)),
+        color: const Color(0xFF0A151D),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFF2A3D4A), width: 1.5),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x40000000),
-            blurRadius: 20,
+            color: Color(0x60000000),
+            blurRadius: 16,
             offset: Offset(4, 0),
           ),
         ],
@@ -665,19 +665,31 @@ class _ToolboxPanel extends StatelessWidget {
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: Color(0xFF284451))),
+              color: Color(0xFF0F1E28),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(6)),
+              border: Border(bottom: BorderSide(color: Color(0xFF2A3D4A))),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.tune, color: Color(0xFFD7A84A), size: 18),
-                SizedBox(width: 8),
-                Text(
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD7A84A),
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: const [
+                      BoxShadow(color: Color(0x80D7A84A), blurRadius: 4),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text(
                   'DATA LAYERS',
                   style: TextStyle(
                     color: Color(0xFFD7A84A),
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.5,
                   ),
@@ -689,7 +701,7 @@ class _ToolboxPanel extends StatelessWidget {
           // Layer controls
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               children: layerControls.entries.map((entry) {
                 return _LayerControlWidget(
                   name: entry.key,
@@ -722,76 +734,107 @@ class _LayerControlWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Toggle row
+          // Toggle row with soft rubber look rectangular switch + LED
           Row(
             children: [
-              // Toggle switch with LED
-              GestureDetector(
-                onTap: () => onToggle(!control.enabled),
-                child: Container(
-                  width: 44,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A3040),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: control.enabled ? const Color(0xFF284451) : const Color(0xFF152530),
+              // Soft rubber rectangular toggle with LED
+              Column(
+                children: [
+                  // LED indicator (small red glow)
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: control.enabled 
+                          ? const Color(0xFFFF3333) 
+                          : const Color(0xFF3A1515),
+                      borderRadius: BorderRadius.circular(3),
+                      boxShadow: control.enabled
+                          ? const [
+                              BoxShadow(
+                                color: Color(0xFFFF3333),
+                                blurRadius: 6,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
-                  child: Stack(
-                    children: [
-                      // LED indicator
-                      Positioned(
-                        bottom: 4,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Container(
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              color: control.enabled ? Colors.red : Colors.red.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(3),
-                              boxShadow: control.enabled
-                                  ? const [BoxShadow(color: Colors.red, blurRadius: 4)]
-                                  : null,
-                            ),
-                          ),
+                  const SizedBox(height: 4),
+                  // Rectangular rubber toggle
+                  GestureDetector(
+                    onTap: () => onToggle(!control.enabled),
+                    child: Container(
+                      width: 38,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: control.enabled
+                              ? [const Color(0xFF4A5D6A), const Color(0xFF2A3A45)]
+                              : [const Color(0xFF2A3540), const Color(0xFF1A2530)],
                         ),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: control.enabled 
+                              ? const Color(0xFF5A6D7A) 
+                              : const Color(0xFF1A2530),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0x20000000),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                          // Soft rubber effect
+                          BoxShadow(
+                            color: const Color(0x0AFFFFFF),
+                            blurRadius: 1,
+                            offset: const Offset(0, -1),
+                          ),
+                        ],
                       ),
-                      // Sliding toggle
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 150),
-                        curve: Curves.easeInOut,
-                        left: control.enabled ? 20 : 2,
-                        top: 2,
-                        child: Container(
-                          width: 22,
-                          height: 22,
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Color(0xFF3A5060), Color(0xFF2A3A45)],
-                            ),
-                            borderRadius: BorderRadius.circular(11),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Color(0x40000000),
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
+                      child: Stack(
+                        children: [
+                          // Sliding knob
+                          AnimatedPositioned(
+                            duration: const Duration(milliseconds: 150),
+                            curve: Curves.easeInOut,
+                            left: control.enabled ? 18 : 2,
+                            top: 2,
+                            child: Container(
+                              width: 18,
+                              height: 18,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: control.enabled
+                                      ? [const Color(0xFF6A7D8A), const Color(0xFF4A5D6A)]
+                                      : [const Color(0xFF3A4550), const Color(0xFF2A3540)],
+                                ),
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Color(0x40000000),
+                                    blurRadius: 3,
+                                    offset: Offset(0, 1),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
               
               const SizedBox(width: 10),
@@ -799,10 +842,10 @@ class _LayerControlWidget extends StatelessWidget {
               // Layer name
               Expanded(
                 child: Text(
-                  name.toUpperCase(),
+                  name,
                   style: TextStyle(
-                    color: control.enabled ? const Color(0xFFE8F1F3) : const Color(0xFF6A8090),
-                    fontSize: 11,
+                    color: control.enabled ? const Color(0xFFE8F1F3) : const Color(0xFF5A6A75),
+                    fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
                   ),
@@ -811,30 +854,30 @@ class _LayerControlWidget extends StatelessWidget {
             ],
           ),
           
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           
           // Gain knob row
           Row(
             children: [
-              const SizedBox(width: 52),
+              const SizedBox(width: 44),
               
-              // Label
+              // GAIN label
               const Text(
                 'GAIN',
                 style: TextStyle(
-                  color: Color(0xFF6A8090),
-                  fontSize: 9,
+                  color: Color(0xFF5A6A75),
+                  fontSize: 8,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 1,
                 ),
               ),
               
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               
               // Rotary knob
               GestureDetector(
                 onPanUpdate: (details) {
-                  final change = -details.delta.dy * 0.01;
+                  final change = -details.delta.dy * 0.008;
                   final newGain = (control.gain + change).clamp(0.0, 1.0);
                   onGainChanged(newGain);
                 },
@@ -844,22 +887,23 @@ class _LayerControlWidget extends StatelessWidget {
                 ),
               ),
               
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               
               // Value display
               Container(
-                width: 36,
-                padding: const EdgeInsets.symmetric(vertical: 4),
+                width: 32,
+                padding: const EdgeInsets.symmetric(vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF152530),
+                  color: const Color(0xFF0F1A22),
                   borderRadius: BorderRadius.circular(4),
+                  border: Border.all(color: const Color(0xFF1A2A35)),
                 ),
                 child: Text(
                   '${(control.gain * 100).round()}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: control.enabled ? const Color(0xFF70C4D4) : const Color(0xFF4A6070),
-                    fontSize: 11,
+                    color: control.enabled ? const Color(0xFF70C4D4) : const Color(0xFF3A4A55),
+                    fontSize: 10,
                     fontFamily: 'monospace',
                     fontWeight: FontWeight.w600,
                   ),
