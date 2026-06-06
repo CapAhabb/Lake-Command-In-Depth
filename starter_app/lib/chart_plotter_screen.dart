@@ -50,148 +50,210 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A2530),
+      backgroundColor: const Color(0xFF0A0A0A),
       body: Center(
         child: Container(
-          margin: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0D1520),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFF2A3A4A), width: 3),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.8),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
-              ),
-              BoxShadow(
-                color: const Color(0xFF1A2A3A),
-                blurRadius: 0,
-                offset: const Offset(5, 5),
+          margin: const EdgeInsets.all(8),
+          child: Stack(
+            children: [
+              // Outer plastic housing (thick black bezel)
+              _PlasticHousing(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Stack(
+                    children: [
+                      // Main chart with overlays
+                      Positioned(
+                        left: dataBezelVisible ? 220 : 0,
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: _ChartArea(layerControls: layerControls),
+                      ),
+                      
+                      // Data Bezel (left panel with toggles/knobs)
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        left: dataBezelVisible ? 0 : -220,
+                        top: 0,
+                        bottom: 0,
+                        child: _DataBezelPanel(
+                          layerControls: layerControls,
+                          onToggle: (name, enabled) {
+                            setState(() {
+                              layerControls[name]!.enabled = enabled;
+                            });
+                          },
+                          onGainChanged: (name, gain) {
+                            setState(() {
+                              layerControls[name]!.gain = gain;
+                            });
+                          },
+                        ),
+                      ),
+                      
+                      // Toolbox menu (slides from left over data bezel)
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        left: toolboxVisible ? 0 : -300,
+                        top: 0,
+                        bottom: 0,
+                        child: _ToolboxMenu(
+                          onClose: () {
+                            setState(() {
+                              toolboxVisible = false;
+                            });
+                          },
+                        ),
+                      ),
+                      
+                      // Menu button to toggle toolbox
+                      Positioned(
+                        left: dataBezelVisible ? 230 : 15,
+                        top: 15,
+                        child: _MenuButton(
+                          onTap: () {
+                            setState(() {
+                              toolboxVisible = !toolboxVisible;
+                            });
+                          },
+                        ),
+                      ),
+                      
+                      // Top info bar
+                      Positioned(
+                        top: 15,
+                        left: dataBezelVisible ? 285 : 75,
+                        right: 90,
+                        child: const _TopInfoBar(),
+                      ),
+                      
+                      // Compass
+                      Positioned(
+                        right: 25,
+                        top: 80,
+                        child: const _CompassWidget(),
+                      ),
+                      
+                      // Toggle data bezel button
+                      Positioned(
+                        right: 25,
+                        bottom: 15,
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              dataBezelVisible = !dataBezelVisible;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1A1A),
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: const Color(0xFF3A3A3A)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.5),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  dataBezelVisible ? Icons.chevron_left : Icons.chevron_right,
+                                  color: const Color(0xFFD7A84A),
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  dataBezelVisible ? 'HIDE' : 'SHOW',
+                                  style: const TextStyle(
+                                    color: Color(0xFFD7A84A),
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Stack(
-              children: [
-                // Main chart with overlays
-                Positioned(
-                  left: dataBezelVisible ? 200 : 0,
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  child: _ChartArea(layerControls: layerControls),
-                ),
-                
-                // Data Bezel (left panel with toggles/knobs)
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  left: dataBezelVisible ? 0 : -200,
-                  top: 0,
-                  bottom: 0,
-                  child: _DataBezelPanel(
-                    layerControls: layerControls,
-                    onToggle: (name, enabled) {
-                      setState(() {
-                        layerControls[name]!.enabled = enabled;
-                      });
-                    },
-                    onGainChanged: (name, gain) {
-                      setState(() {
-                        layerControls[name]!.gain = gain;
-                      });
-                    },
-                  ),
-                ),
-                
-                // Toolbox menu (slides from left over data bezel)
-                AnimatedPositioned(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  left: toolboxVisible ? 0 : -280,
-                  top: 0,
-                  bottom: 0,
-                  child: _ToolboxMenu(
-                    onClose: () {
-                      setState(() {
-                        toolboxVisible = false;
-                      });
-                    },
-                  ),
-                ),
-                
-                // Menu button to toggle toolbox
-                Positioned(
-                  left: dataBezelVisible ? 210 : 10,
-                  top: 20,
-                  child: _MenuButton(
-                    onTap: () {
-                      setState(() {
-                        toolboxVisible = !toolboxVisible;
-                      });
-                    },
-                  ),
-                ),
-                
-                // Top info bar
-                Positioned(
-                  top: 15,
-                  left: dataBezelVisible ? 260 : 60,
-                  right: 80,
-                  child: const _TopInfoBar(),
-                ),
-                
-                // Compass
-                Positioned(
-                  right: 20,
-                  top: 80,
-                  child: const _CompassWidget(),
-                ),
-                
-                // Toggle data bezel button
-                Positioned(
-                  right: 20,
-                  bottom: 20,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        dataBezelVisible = !dataBezelVisible;
-                      });
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0A1520),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFF2A3A4A)),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            dataBezelVisible ? Icons.chevron_left : Icons.chevron_right,
-                            color: const Color(0xFFD7A84A),
-                            size: 20,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            dataBezelVisible ? 'HIDE' : 'SHOW',
-                            style: const TextStyle(
-                              color: Color(0xFFD7A84A),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        ),
+      ),
+    );
+  }
+}
+
+// Plastic housing widget with realistic depth
+class _PlasticHousing extends StatelessWidget {
+  final Widget child;
+  const _PlasticHousing({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF2A2A2A), width: 1),
+        boxShadow: [
+          // Deep shadow for 3D depth
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.9),
+            blurRadius: 40,
+            offset: const Offset(0, 15),
+            spreadRadius: 5,
           ),
+          // Inner bevel highlight (top-left)
+          BoxShadow(
+            color: const Color(0xFF3A3A3A).withValues(alpha: 0.3),
+            blurRadius: 0,
+            offset: const Offset(-2, -2),
+          ),
+          // Inner bevel shadow (bottom-right)
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.5),
+            blurRadius: 0,
+            offset: const Offset(3, 3),
+          ),
+        ],
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF252525),
+              Color(0xFF1A1A1A),
+              Color(0xFF151515),
+            ],
+          ),
+          boxShadow: [
+            // Inner screen inset shadow
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.8),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: child,
         ),
       ),
     );
@@ -219,42 +281,72 @@ class _DataBezelPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200,
+      width: 220,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1A2530), Color(0xFF0D1520)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF2A2A2A), Color(0xFF1A1A1A), Color(0xFF151515)],
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF2A3A4A), width: 2)),
+        border: const Border(right: BorderSide(color: Color(0xFF0A0A0A), width: 3)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 15, offset: const Offset(3, 0)),
+          // Inset shadow for recessed panel look
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.8),
+            blurRadius: 0,
+            offset: const Offset(2, 0),
+          ),
         ],
       ),
       child: Column(
         children: [
-          // Header
+          // Header - dark recessed area
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: const BoxDecoration(
-              color: Color(0xFF0A1520),
-              border: Border(bottom: BorderSide(color: Color(0xFF2A3A4A))),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D0D0D),
+              border: Border(
+                bottom: BorderSide(color: const Color(0xFF3A3A3A).withValues(alpha: 0.5), width: 1),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.layers, color: Color(0xFFD7A84A), size: 20),
-                SizedBox(width: 8),
-                Text('DATA BEZEL',
-                  style: TextStyle(color: Color(0xFFD7A84A), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.5),
+                Container(
+                  width: 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00FF00),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF00FF00).withValues(alpha: 0.8),
+                        blurRadius: 6,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text('DATA BEZEL',
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 2),
+                  ),
                 ),
               ],
             ),
           ),
           
-          // Layer controls
+          // Layer controls with more spacing
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               children: layerControls.entries.map((entry) {
                 return _LayerControlRow(
                   name: entry.key,
@@ -287,12 +379,19 @@ class _LayerControlRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A1520),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF1A2A35)),
+        color: const Color(0xFF0F0F0F),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: const Color(0xFF2A2A2A), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 2,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,42 +399,52 @@ class _LayerControlRow extends StatelessWidget {
           // Toggle + LED row
           Row(
             children: [
-              // LED indicator
+              // LED indicator (bigger, more realistic)
               Container(
-                width: 8,
-                height: 8,
+                width: 10,
+                height: 10,
                 decoration: BoxDecoration(
-                  color: control.enabled ? const Color(0xFFFF3333) : const Color(0xFF3A1515),
-                  borderRadius: BorderRadius.circular(4),
+                  color: control.enabled ? const Color(0xFFFF3333) : const Color(0xFF2A0A0A),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: control.enabled ? const Color(0xFFFF6666) : const Color(0xFF1A0A0A),
+                    width: 1,
+                  ),
                   boxShadow: control.enabled
-                      ? const [BoxShadow(color: Color(0xFFFF3333), blurRadius: 6, spreadRadius: 1)]
+                      ? [
+                          BoxShadow(
+                            color: const Color(0xFFFF3333).withValues(alpha: 0.9),
+                            blurRadius: 8,
+                            spreadRadius: 2,
+                          ),
+                        ]
                       : null,
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               
-              // Toggle switch (rectangular, soft rubber look)
+              // Toggle switch (bigger, more realistic)
               GestureDetector(
                 onTap: () => onToggle(!control.enabled),
                 child: Container(
-                  width: 44,
-                  height: 26,
+                  width: 48,
+                  height: 28,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: control.enabled
-                          ? [const Color(0xFF4A5D6A), const Color(0xFF2A3A45)]
-                          : [const Color(0xFF2A3540), const Color(0xFF1A2530)],
+                          ? [const Color(0xFF3A3A3A), const Color(0xFF252525)]
+                          : [const Color(0xFF252525), const Color(0xFF1A1A1A)],
                     ),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: control.enabled ? const Color(0xFF5A6D7A) : const Color(0xFF1A2530),
+                      color: control.enabled ? const Color(0xFF4A4A4A) : const Color(0xFF1A1A1A),
                       width: 1,
                     ),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 4, offset: const Offset(0, 2)),
-                      BoxShadow(color: Colors.white.withValues(alpha: 0.1), blurRadius: 1, offset: const Offset(0, -1)),
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 4, offset: const Offset(0, 2)),
+                      BoxShadow(color: Colors.white.withValues(alpha: 0.05), blurRadius: 1, offset: const Offset(0, -1)),
                     ],
                   ),
                   child: Stack(
@@ -343,22 +452,23 @@ class _LayerControlRow extends StatelessWidget {
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 150),
                         curve: Curves.easeInOut,
-                        left: control.enabled ? 22 : 2,
+                        left: control.enabled ? 24 : 2,
                         top: 2,
                         child: Container(
-                          width: 20,
-                          height: 20,
+                          width: 22,
+                          height: 22,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                               colors: control.enabled
-                                  ? [const Color(0xFF6A7D8A), const Color(0xFF4A5D6A)]
-                                  : [const Color(0xFF3A4550), const Color(0xFF2A3540)],
+                                  ? [const Color(0xFF5A5A5A), const Color(0xFF3A3A3A)]
+                                  : [const Color(0xFF3A3A3A), const Color(0xFF252525)],
                             ),
                             borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: const Color(0xFF2A2A2A), width: 1),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 3, offset: const Offset(0, 1)),
+                              BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 3, offset: const Offset(0, 1)),
                             ],
                           ),
                         ),
@@ -368,62 +478,66 @@ class _LayerControlRow extends StatelessWidget {
                 ),
               ),
               
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               
               // Layer name
               Expanded(
                 child: Text(
                   name,
                   style: TextStyle(
-                    color: control.enabled ? const Color(0xFFE8F1F3) : const Color(0xFF5A6A75),
+                    color: control.enabled ? const Color(0xFFD0D0D0) : const Color(0xFF4A4A4A),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
             ],
           ),
           
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           
-          // GAIN label + knob
+          // GAIN label + knob (bigger)
           Row(
             children: [
-              const SizedBox(width: 16),
+              const SizedBox(width: 20),
               const Text('GAIN',
-                style: TextStyle(color: Color(0xFF5A6A75), fontSize: 8, fontWeight: FontWeight.w600, letterSpacing: 1),
+                style: TextStyle(color: Color(0xFF5A5A5A), fontSize: 8, fontWeight: FontWeight.w600, letterSpacing: 1),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               
-              // Rotary knob (slightly bigger)
+              // Rotary knob (bigger - 44x44)
               GestureDetector(
                 onPanUpdate: (details) {
-                  final change = -details.delta.dy * 0.008;
+                  final change = -details.delta.dy * 0.006;
                   final newGain = (control.gain + change).clamp(0.0, 1.0);
                   onGainChanged(newGain);
                 },
                 child: _RotaryKnob(value: control.gain, enabled: control.enabled),
               ),
               
-              const SizedBox(width: 4),
+              const SizedBox(width: 6),
               
               // Value display
               Container(
-                width: 28,
-                padding: const EdgeInsets.symmetric(vertical: 2),
+                width: 32,
+                padding: const EdgeInsets.symmetric(vertical: 3),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F1A22),
+                  color: const Color(0xFF0A0A0A),
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: const Color(0xFF1A2A35)),
+                  border: Border.all(color: const Color(0xFF2A2A2A)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 2, offset: const Offset(0, 1)),
+                  ],
                 ),
                 child: Text(
                   '${(control.gain * 100).round()}',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: control.enabled ? const Color(0xFF70C4D4) : const Color(0xFF3A4A55),
-                    fontSize: 9,
+                    color: control.enabled ? const Color(0xFF70C4D4) : const Color(0xFF3A3A3A),
+                    fontSize: 10,
                     fontFamily: 'monospace',
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -444,8 +558,8 @@ class _RotaryKnob extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 36,
-      height: 36,
+      width: 44,
+      height: 44,
       child: CustomPaint(
         painter: _KnobPainter(value: value, enabled: enabled),
       ),
@@ -462,42 +576,60 @@ class _KnobPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 2;
+    final radius = size.width / 2;
 
-    // Outer ring
+    // Outer shadow
+    final shadowPaint = Paint()
+      ..color = Colors.black.withValues(alpha: 0.6)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    canvas.drawCircle(Offset(center.dx, center.dy + 2), radius - 2, shadowPaint);
+
+    // Outer ring (dark plastic base)
     final outerPaint = Paint()
-      ..color = const Color(0xFF1A3040)
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, radius, outerPaint);
+      ..shader = RadialGradient(
+        colors: [const Color(0xFF2A2A2A), const Color(0xFF1A1A1A)],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+    canvas.drawCircle(center, radius - 2, outerPaint);
 
-    // Knob body gradient
+    // Knob body (metallic look)
     final bodyPaint = Paint()
       ..shader = RadialGradient(
+        center: const Alignment(-0.3, -0.3),
         colors: [
-          const Color(0xFF4A6070),
-          const Color(0xFF2A3A4A),
+          const Color(0xFF5A5A5A),
+          const Color(0xFF3A3A3A),
+          const Color(0xFF252525),
         ],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
-    canvas.drawCircle(center, radius - 3, bodyPaint);
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius - 4));
+    canvas.drawCircle(center, radius - 4, bodyPaint);
 
     // Indicator line
     final angle = -math.pi * 0.75 + value * math.pi * 1.5;
     final indicatorEnd = Offset(
-      center.dx + (radius - 6) * math.cos(angle),
-      center.dy + (radius - 6) * math.sin(angle),
+      center.dx + (radius - 8) * math.cos(angle),
+      center.dy + (radius - 8) * math.sin(angle),
     );
 
     final indicatorPaint = Paint()
-      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF4A6070)
-      ..strokeWidth = 2.5
+      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF4A4A4A)
+      ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(center, indicatorEnd, indicatorPaint);
 
-    // Center dot
+    // Center dot (recessed look)
     final centerDotPaint = Paint()
-      ..color = const Color(0xFF0D1F28)
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, 4, centerDotPaint);
+      ..shader = RadialGradient(
+        colors: [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
+      ).createShader(Rect.fromCircle(center: center, radius: 5));
+    canvas.drawCircle(center, 5, centerDotPaint);
+
+    // Highlight ring
+    final highlightPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    canvas.drawCircle(center, radius - 3, highlightPaint);
   }
 
   @override
@@ -514,20 +646,21 @@ class _ChartArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF0A1520), Color(0xFF07131A)],
-        ),
+        borderRadius: BorderRadius.circular(6),
+        color: const Color(0xFF0A0F14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 20, offset: const Offset(5, 5)),
+          // Inset shadow for screen depth
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.8),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(4),
         child: CustomPaint(
           painter: _ChartPainter(layerControls: layerControls),
           child: Container(),
