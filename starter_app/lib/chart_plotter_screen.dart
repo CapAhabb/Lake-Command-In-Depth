@@ -249,11 +249,11 @@ class _ChartPainter extends CustomPainter {
     
     // Create depth gradient zones
     final colors = [
-      const Color(0xFF0A2535).withOpacity(opacity),
-      const Color(0xFF0D3040).withOpacity(opacity),
-      const Color(0xFF0F3D50).withOpacity(opacity),
-      const Color(0xFF124A60).withOpacity(opacity),
-      const Color(0xFF155570).withOpacity(opacity),
+      const Color(0xFF0A2535).withValues(alpha:opacity),
+      const Color(0xFF0D3040).withValues(alpha:opacity),
+      const Color(0xFF0F3D50).withValues(alpha:opacity),
+      const Color(0xFF124A60).withValues(alpha:opacity),
+      const Color(0xFF155570).withValues(alpha:opacity),
     ];
     
     for (int i = 0; i < 5; i++) {
@@ -273,7 +273,7 @@ class _ChartPainter extends CustomPainter {
 
   void _drawContours(Canvas canvas, Size size, Offset center, double gain) {
     final paint = Paint()
-      ..color = const Color(0xFF70C4D4).withOpacity(gain * 0.6)
+      ..color = const Color(0xFF70C4D4).withValues(alpha:gain * 0.6)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -306,7 +306,7 @@ class _ChartPainter extends CustomPainter {
         text: TextSpan(
           text: '${100 - ring * 15}F',
           style: TextStyle(
-            color: const Color(0xFF70C4D4).withOpacity(gain * 0.5),
+            color: const Color(0xFF70C4D4).withValues(alpha:gain * 0.5),
             fontSize: 9,
           ),
         ),
@@ -331,7 +331,7 @@ class _ChartPainter extends CustomPainter {
       final radius = 30 + random.nextDouble() * 50;
       
       final paint = Paint()
-        ..color = const Color(0xFF90EE90).withOpacity(opacity)
+        ..color = const Color(0xFF90EE90).withValues(alpha:opacity)
         ..style = PaintingStyle.fill;
       
       // Draw cluster of small dots
@@ -361,7 +361,7 @@ class _ChartPainter extends CustomPainter {
       
       // Fish icon representation
       final paint = Paint()
-        ..color = color.withOpacity(opacity)
+        ..color = color.withValues(alpha:opacity)
         ..style = PaintingStyle.fill;
       
       canvas.drawCircle(Offset(x, y), 8, paint);
@@ -372,7 +372,7 @@ class _ChartPainter extends CustomPainter {
         text: TextSpan(
           text: label,
           style: TextStyle(
-            color: color.withOpacity(opacity),
+            color: color.withValues(alpha:opacity),
             fontSize: 10,
             fontWeight: FontWeight.bold,
           ),
@@ -387,7 +387,7 @@ class _ChartPainter extends CustomPainter {
   void _drawCurrents(Canvas canvas, Size size, Offset center, double gain) {
     final opacity = gain * 0.5;
     final paint = Paint()
-      ..color = const Color(0xFF00CED1).withOpacity(opacity)
+      ..color = const Color(0xFF00CED1).withValues(alpha:opacity)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -413,9 +413,9 @@ class _ChartPainter extends CustomPainter {
     // Draw temperature gradient overlay
     final gradient = RadialGradient(
       colors: [
-        const Color(0xFFFF6B6B).withOpacity(opacity * 0.3),
-        const Color(0xFF4ECDC4).withOpacity(opacity * 0.3),
-        const Color(0xFF3498DB).withOpacity(opacity * 0.3),
+        const Color(0xFFFF6B6B).withValues(alpha:opacity * 0.3),
+        const Color(0xFF4ECDC4).withValues(alpha:opacity * 0.3),
+        const Color(0xFF3498DB).withValues(alpha:opacity * 0.3),
       ],
     );
     
@@ -437,7 +437,7 @@ class _ChartPainter extends CustomPainter {
     
     // Draw wind direction indicator
     final paint = Paint()
-      ..color = const Color(0xFFFFFFFF).withOpacity(opacity)
+      ..color = const Color(0xFFFFFFFF).withValues(alpha:opacity)
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
@@ -595,11 +595,6 @@ class _LogoPainter extends CustomPainter {
     canvas.drawCircle(center, size.width * 0.35, fillPaint);
     
     // Compass points
-    final pointPaint = Paint()
-      ..color = const Color(0xFF70C4D4)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-    
     // North point (triangle)
     final path = Path()
       ..moveTo(center.dx, center.dy - size.width * 0.3)
@@ -1116,7 +1111,7 @@ class _BoatPainter extends CustomPainter {
 
     // Heading line
     final linePaint = Paint()
-      ..color = const Color(0xFFFF6B6B).withOpacity(0.8)
+      ..color = const Color(0xFFFF6B6B).withValues(alpha:0.8)
       ..strokeWidth = 2;
     
     canvas.drawLine(
