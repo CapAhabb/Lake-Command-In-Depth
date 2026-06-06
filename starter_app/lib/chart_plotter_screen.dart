@@ -418,7 +418,7 @@ class _LayerControlRow extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               
-              // Toggle switch (curved, pill-shaped)
+              // Toggle switch (curved, pill-shaped with 3D protrusion)
               GestureDetector(
                 onTap: () => onToggle(!control.enabled),
                 child: Container(
@@ -429,17 +429,16 @@ class _LayerControlRow extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: control.enabled
-                          ? [const Color(0xFF353535), const Color(0xFF252525)]
-                          : [const Color(0xFF252525), const Color(0xFF151515)],
+                          ? [const Color(0xFF2A2A2A), const Color(0xFF151515)]
+                          : [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
                     ),
                     borderRadius: BorderRadius.circular(15),  // Pill shape!
                     border: Border.all(
-                      color: control.enabled ? const Color(0xFF454545) : const Color(0xFF151515),
+                      color: control.enabled ? const Color(0xFF353535) : const Color(0xFF0F0F0F),
                       width: 1,
                     ),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 4, offset: const Offset(0, 2)),
-                      BoxShadow(color: Colors.white.withValues(alpha: 0.05), blurRadius: 1, offset: const Offset(0, -1)),
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.7), blurRadius: 4, offset: const Offset(0, 3)),
                     ],
                   ),
                   child: Stack(
@@ -453,17 +452,43 @@ class _LayerControlRow extends StatelessWidget {
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                            // 3D protruding knob with off-center highlight
+                            gradient: RadialGradient(
+                              center: const Alignment(-0.4, -0.4),
                               colors: control.enabled
-                                  ? [const Color(0xFF606060), const Color(0xFF404040)]
-                                  : [const Color(0xFF404040), const Color(0xFF2A2A2A)],
+                                  ? [
+                                      const Color(0xFF757575),  // Bright highlight
+                                      const Color(0xFF555555),  // Upper
+                                      const Color(0xFF3A3A3A),  // Middle
+                                      const Color(0xFF252525),  // Shadow side
+                                    ]
+                                  : [
+                                      const Color(0xFF4A4A4A),
+                                      const Color(0xFF353535),
+                                      const Color(0xFF252525),
+                                      const Color(0xFF1A1A1A),
+                                    ],
+                              stops: const [0.0, 0.3, 0.7, 1.0],
                             ),
                             borderRadius: BorderRadius.circular(12),  // Round knob
-                            border: Border.all(color: const Color(0xFF2A2A2A), width: 1),
+                            border: Border.all(
+                              color: control.enabled ? const Color(0xFF505050) : const Color(0xFF252525),
+                              width: 1,
+                            ),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 3, offset: const Offset(0, 2)),
+                              // 3D floating shadow
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.6),
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                                spreadRadius: 0,
+                              ),
+                              // Top highlight rim
+                              BoxShadow(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                blurRadius: 2,
+                                offset: const Offset(0, -1),
+                              ),
                             ],
                           ),
                         ),
@@ -573,58 +598,88 @@ class _KnobPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Outer shadow
+    // Gradient drop shadow (dark at bottom, fading up)
     final shadowPaint = Paint()
-      ..color = Colors.black.withValues(alpha: 0.6)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
-    canvas.drawCircle(Offset(center.dx, center.dy + 2), radius - 2, shadowPaint);
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Colors.transparent, Color(0x60000000)],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height * 1.5))
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+    canvas.drawOval(
+      Rect.fromCenter(center: Offset(center.dx, center.dy + 4), width: radius * 1.8, height: radius * 1.2),
+      shadowPaint,
+    );
 
-    // Outer ring (dark plastic base)
-    final outerPaint = Paint()
+    // Outer rim (visible edge of 3D knob)
+    final outerRimPaint = Paint()
       ..shader = RadialGradient(
-        colors: [const Color(0xFF2A2A2A), const Color(0xFF1A1A1A)],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
-    canvas.drawCircle(center, radius - 2, outerPaint);
+        center: const Alignment(-0.4, -0.4),
+        colors: [const Color(0xFF404040), const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
+        stops: const [0.0, 0.6, 1.0],
+      ).createShader(Rect.fromCircle(center: center, radius: radius - 1));
+    canvas.drawCircle(center, radius - 2, outerRimPaint);
 
-    // Knob body (metallic look)
+    // Knob body with 3D perspective (side view - top-left light source)
     final bodyPaint = Paint()
       ..shader = RadialGradient(
-        center: const Alignment(-0.3, -0.3),
+        center: const Alignment(-0.5, -0.5),  // Off-center for side view
+        radius: 1.2,
         colors: [
-          const Color(0xFF5A5A5A),
-          const Color(0xFF3A3A3A),
-          const Color(0xFF252525),
+          enabled ? const Color(0xFF707070) : const Color(0xFF454545),  // Bright top highlight
+          enabled ? const Color(0xFF505050) : const Color(0xFF353535),  // Upper portion
+          enabled ? const Color(0xFF3A3A3A) : const Color(0xFF2A2A2A),  // Middle
+          enabled ? const Color(0xFF252525) : const Color(0xFF1A1A1A),  // Shadow side
         ],
-        stops: const [0.0, 0.5, 1.0],
+        stops: const [0.0, 0.3, 0.6, 1.0],
       ).createShader(Rect.fromCircle(center: center, radius: radius - 4));
     canvas.drawCircle(center, radius - 4, bodyPaint);
+
+    // "Hot spot" highlight (bright reflection on top-left)
+    final hotSpotPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.7, -0.7),
+        radius: 0.5,
+        colors: [
+          Colors.white.withValues(alpha: enabled ? 0.4 : 0.2),
+          Colors.white.withValues(alpha: 0.1),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromCircle(center: Offset(center.dx - radius * 0.25, center.dy - radius * 0.25), radius: radius * 0.4));
+    canvas.drawCircle(center, radius - 4, hotSpotPaint);
 
     // Indicator line
     final angle = -math.pi * 0.75 + value * math.pi * 1.5;
     final indicatorEnd = Offset(
-      center.dx + (radius - 8) * math.cos(angle),
-      center.dy + (radius - 8) * math.sin(angle),
+      center.dx + (radius - 10) * math.cos(angle),
+      center.dy + (radius - 10) * math.sin(angle),
     );
 
     final indicatorPaint = Paint()
-      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF4A4A4A)
+      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF3A3A3A)
       ..strokeWidth = 3
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(center, indicatorEnd, indicatorPaint);
 
-    // Center dot (recessed look)
+    // Center recessed dot
     final centerDotPaint = Paint()
       ..shader = RadialGradient(
-        colors: [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
-      ).createShader(Rect.fromCircle(center: center, radius: 5));
-    canvas.drawCircle(center, 5, centerDotPaint);
+        colors: [const Color(0xFF151515), const Color(0xFF050505)],
+      ).createShader(Rect.fromCircle(center: center, radius: 6));
+    canvas.drawCircle(center, 6, centerDotPaint);
 
-    // Highlight ring
-    final highlightPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.1)
+    // Top edge highlight bevel
+    final bevelPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.15)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    canvas.drawCircle(center, radius - 3, highlightPaint);
+      ..strokeWidth = 1.5;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius - 4),
+      -math.pi * 1.1,
+      math.pi * 0.7,
+      false,
+      bevelPaint,
+    );
   }
 
   @override
@@ -632,7 +687,7 @@ class _KnobPainter extends CustomPainter {
       oldDelegate.value != value || oldDelegate.enabled != enabled;
 }
 
-// Chart Area with data overlays
+// Chart Area with data overlays (95% width)
 class _ChartArea extends StatelessWidget {
   const _ChartArea({required this.layerControls});
 
@@ -640,27 +695,38 @@ class _ChartArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),  // Sexy curves
-        color: const Color(0xFF080C10),
-        boxShadow: [
-          // Inset shadow for screen depth
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.7),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        return Container(
+          margin: EdgeInsets.only(
+            left: 12,
+            top: 12,
+            bottom: 12,
+            right: 12 + (width * 0.05),  // 5% narrower on right
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),  // Curved
-        child: CustomPaint(
-          painter: _ChartPainter(layerControls: layerControls),
-          child: Container(),
-        ),
-      ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),  // Sexy curves
+            color: const Color(0xFF080C10),
+            boxShadow: [
+              // Gradient drop shadow (fading up)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.5),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),  // Curved
+            child: CustomPaint(
+              painter: _ChartPainter(layerControls: layerControls),
+              child: Container(),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -946,18 +1012,59 @@ class _MenuButton extends StatelessWidget {
         width: 50,
         height: 50,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF2A3A4A), Color(0xFF1A2A3A)],
+          // 3D metallic gradient with off-center highlight
+          gradient: RadialGradient(
+            center: const Alignment(-0.4, -0.4),
+            colors: [
+              const Color(0xFF454545),  // Bright top-left
+              const Color(0xFF353535),  // Upper
+              const Color(0xFF252525),  // Middle
+              const Color(0xFF151515),  // Shadow side
+            ],
+            stops: const [0.0, 0.3, 0.7, 1.0],
           ),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFF3A4A5A)),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFF353535), width: 1),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 8, offset: const Offset(2, 2)),
+            // 3D floating shadow (gradient)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.6),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+            // Top edge highlight
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.1),
+              blurRadius: 2,
+              offset: const Offset(0, -1),
+            ),
           ],
         ),
-        child: const Icon(Icons.menu, color: Color(0xFFD7A84A), size: 28),
+        child: Center(
+          child: Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(-0.3, -0.3),
+                colors: [
+                  const Color(0xFF555555),
+                  const Color(0xFF353535),
+                ],
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.4),
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: const Icon(Icons.menu, color: Color(0xFFD7A84A), size: 20),
+          ),
+        ),
       ),
     );
   }
@@ -972,21 +1079,76 @@ class _CompassWidget extends StatelessWidget {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: const Color(0xCC0D1F28),
+        // 3D metallic beveled ring
+        gradient: RadialGradient(
+          center: const Alignment(-0.3, -0.3),
+          colors: [
+            const Color(0xFF454545),  // Top-left highlight
+            const Color(0xFF353535),  // Upper
+            const Color(0xFF252525),  // Middle
+            const Color(0xFF151515),  // Shadow
+          ],
+          stops: const [0.0, 0.3, 0.7, 1.0],
+        ),
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFF40606D), width: 2),
-        boxShadow: const [
-          BoxShadow(color: Color(0x40000000), blurRadius: 8, offset: Offset(0, 4)),
-        ],
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          CustomPaint(size: const Size(64, 64), painter: _CompassPainter()),
-          const Text('045°',
-            style: TextStyle(color: Color(0xFFD7A84A), fontSize: 11, fontWeight: FontWeight.w900, fontFamily: 'monospace'),
+        border: Border.all(color: const Color(0xFF303030), width: 2),
+        boxShadow: [
+          // Gradient drop shadow (fading up)
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.7),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+            spreadRadius: 2,
+          ),
+          // Top highlight
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.1),
+            blurRadius: 2,
+            offset: const Offset(0, -2),
           ),
         ],
+      ),
+      child: Container(
+        margin: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          // Inner bezel with depth
+          gradient: const RadialGradient(
+            colors: [Color(0xFF151515), Color(0xFF0A0A0A)],
+          ),
+          shape: BoxShape.circle,
+          border: Border.all(color: const Color(0xFF0A0A0A), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            CustomPaint(size: const Size(56, 56), painter: _CompassPainter()),
+            Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
+                ),
+              ),
+            ),
+            Text('045°',
+              style: TextStyle(
+                color: const Color(0xFFD7A84A),
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                fontFamily: 'monospace',
+                shadows: [
+                  Shadow(color: Colors.black.withValues(alpha: 0.8), offset: const Offset(1, 1), blurRadius: 2),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1032,20 +1194,47 @@ class _TopInfoBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A1520).withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF2A3A4A)),
+        // 3D beveled/embossed gradient
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF1A1A1A),  // Top highlight
+            Color(0xFF0F0F0F),  // Upper
+            Color(0xFF0A0A0A),  // Main
+            Color(0xFF050505),  // Bottom shadow
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: const Color(0xFF252525),  // Top/left bevel
+          width: 1,
+        ),
+        boxShadow: [
+          // Bottom shadow for depth
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.6),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+          // Top highlight bevel
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.05),
+            blurRadius: 1,
+            offset: const Offset(0, -1),
+          ),
+        ],
       ),
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              Icon(Icons.anchor, color: Color(0xFFD7A84A), size: 18),
-              SizedBox(width: 8),
-              Text('LAKE COMMAND IN DEPTH',
-                style: TextStyle(color: Color(0xFFD7A84A), fontSize: 14, fontWeight: FontWeight.w800, letterSpacing: 2),
-              ),
+              // 3D anchor icon
+              Depth3DIcon(icon: Icons.anchor, size: 20),
+              SizedBox(width: 10),
+              // 3D text effect for branding
+              Depth3DText(text: 'LAKE COMMAND IN DEPTH'),
             ],
           ),
           Row(
@@ -1061,6 +1250,89 @@ class _TopInfoBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// 3D Icon with bevel effect
+class Depth3DIcon extends StatelessWidget {
+  final IconData icon;
+  final double size;
+  const Depth3DIcon({super.key, required this.icon, required this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          center: const Alignment(-0.3, -0.3),
+          colors: [
+            const Color(0xFF606060),
+            const Color(0xFF404040),
+            const Color(0xFF252525),
+          ],
+        ),
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 3,
+            offset: const Offset(1, 1),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Icon(icon, color: Color(0xFFD7A84A), size: size),
+    );
+  }
+}
+
+// 3D Text with embossed effect
+class Depth3DText extends StatelessWidget {
+  final String text;
+  const Depth3DText({super.key, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Shadow layer
+        Text(
+          text,
+          style: TextStyle(
+            color: Colors.black.withValues(alpha: 0.5),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2,
+            shadows: const [
+              Shadow(color: Colors.black, offset: Offset(1, 1), blurRadius: 0),
+            ],
+          ),
+        ),
+        // Highlight layer (offset up-left)
+        Text(
+          text,
+          style: TextStyle(
+            color: const Color(0xFFD7A84A).withValues(alpha: 0.3),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2,
+            shadows: const [
+              Shadow(color: Colors.white, offset: Offset(-1, -1), blurRadius: 0),
+            ],
+          ),
+        ),
+        // Main text
+        Text(
+          text,
+          style: const TextStyle(
+            color: Color(0xFFD7A84A),
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2,
+          ),
+        ),
+      ],
     );
   }
 }
