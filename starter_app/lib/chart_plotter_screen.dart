@@ -64,8 +64,8 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                     children: [
                       // Main chart with overlays
                       Positioned(
-                        left: dataBezelVisible ? 220 : 0,
-                        right: 0,
+                        left: dataBezelVisible ? 170 : 0,  // Tighter panel
+                        right: 20,  // 10% margin on right
                         top: 0,
                         bottom: 0,
                         child: _ChartArea(layerControls: layerControls),
@@ -75,7 +75,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        left: dataBezelVisible ? 0 : -220,
+                        left: dataBezelVisible ? 0 : -170,  // Tighter panel
                         top: 0,
                         bottom: 0,
                         child: _DataBezelPanel(
@@ -111,7 +111,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       
                       // Menu button to toggle toolbox
                       Positioned(
-                        left: dataBezelVisible ? 230 : 15,
+                        left: dataBezelVisible ? 180 : 10,
                         top: 15,
                         child: _MenuButton(
                           onTap: () {
@@ -125,8 +125,8 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       // Top info bar
                       Positioned(
                         top: 15,
-                        left: dataBezelVisible ? 285 : 75,
-                        right: 90,
+                        left: dataBezelVisible ? 230 : 60,
+                        right: 80,
                         child: const _TopInfoBar(),
                       ),
                       
@@ -195,7 +195,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
   }
 }
 
-// Plastic housing widget with realistic curved depth
+// Plastic housing widget - matching bezelidea.jpeg reference
 class _PlasticHousing extends StatelessWidget {
   final Widget child;
   const _PlasticHousing({required this.child});
@@ -204,43 +204,59 @@ class _PlasticHousing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF151515),
-        borderRadius: BorderRadius.circular(30),  // Sexy curved corners
-        border: Border.all(color: const Color(0xFF252525), width: 2),
+        color: const Color(0xFF0F0F0F),
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF252525),  // Top-left highlight
+            Color(0xFF1A1A1A),  // Upper
+            Color(0xFF101010),  // Middle
+            Color(0xFF0A0A0A),  // Bottom-right shadow
+          ],
+          stops: [0.0, 0.3, 0.6, 1.0],
+        ),
+        border: Border.all(color: const Color(0xFF303030), width: 2),
         boxShadow: [
-          // Deep outer shadow for 3D floating effect
+          // Deep outer shadow
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.95),
-            blurRadius: 50,
-            offset: const Offset(0, 20),
-            spreadRadius: 3,
+            blurRadius: 60,
+            offset: const Offset(0, 25),
+            spreadRadius: 5,
           ),
-          // Subtle outer glow
+          // Top-left bevel highlight
           BoxShadow(
-            color: const Color(0xFF0A0A0A).withValues(alpha: 0.8),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-            spreadRadius: 1,
+            color: Colors.white.withValues(alpha: 0.05),
+            blurRadius: 0,
+            offset: const Offset(-2, -2),
+          ),
+          // Bottom-right inset shadow
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.8),
+            blurRadius: 0,
+            offset: const Offset(4, 4),
           ),
         ],
       ),
       child: Container(
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),  // Curved inner
+          borderRadius: BorderRadius.circular(20),
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
               Color(0xFF1A1A1A),
-              Color(0xFF101010),
-              Color(0xFF0A0A0A),
+              Color(0xFF0D0D0D),
+              Color(0xFF080808),
             ],
           ),
-          border: Border.all(color: const Color(0xFF0A0A0A), width: 3),
+          border: Border.all(color: const Color(0xFF050505), width: 2),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
           child: child,
         ),
       ),
@@ -269,87 +285,69 @@ class _DataBezelPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 220,
+      width: 160,  // Tighter panel
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF252525), Color(0xFF1A1A1A), Color(0xFF101010)],
+          colors: [Color(0xFF1A1A1A), Color(0xFF101010), Color(0xFF0A0A0A)],
         ),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(18),
-          bottomLeft: Radius.circular(18),
+          topLeft: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF0A0A0A), width: 4)),
+        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 3)),
         boxShadow: [
-          // Inset shadow for recessed panel look
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.6),
+            color: Colors.black.withValues(alpha: 0.8),
             blurRadius: 0,
-            offset: const Offset(3, 0),
+            offset: const Offset(2, 0),
           ),
         ],
       ),
       child: Column(
         children: [
-          // Header - dark recessed area with curves
+          // Header
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: const Color(0xFF0A0A0A),
+              color: const Color(0xFF080808),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
+                topLeft: Radius.circular(16),
               ),
               border: Border(
-                bottom: BorderSide(color: const Color(0xFF3A3A3A).withValues(alpha: 0.4), width: 1),
+                bottom: BorderSide(color: const Color(0xFF2A2A2A).withValues(alpha: 0.5), width: 1),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
             ),
-            child: Row(
+            child: const Row(
               children: [
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00FF00),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF00FF00).withValues(alpha: 0.8),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                const Expanded(
+                Icon(Icons.layers, color: Color(0xFFD7A84A), size: 16),
+                SizedBox(width: 6),
+                Expanded(
                   child: Text('DATA BEZEL',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 2),
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5),
                   ),
                 ),
               ],
             ),
           ),
           
-          // Layer controls with more spacing
+          // Layer controls - compact grid layout
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(12),
-              children: layerControls.entries.map((entry) {
-                return _LayerControlRow(
-                  name: entry.key,
-                  control: entry.value,
-                  onToggle: (enabled) => onToggle(entry.key, enabled),
-                  onGainChanged: (gain) => onGainChanged(entry.key, gain),
-                );
-              }).toList(),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: layerControls.entries.map((entry) {
+                  return _CompactLayerControl(
+                    name: entry.key,
+                    control: entry.value,
+                    onToggle: (enabled) => onToggle(entry.key, enabled),
+                    onGainChanged: (gain) => onGainChanged(entry.key, gain),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         ],
@@ -358,8 +356,9 @@ class _DataBezelPanel extends StatelessWidget {
   }
 }
 
-class _LayerControlRow extends StatelessWidget {
-  const _LayerControlRow({
+// Compact layer control with button-style toggle
+class _CompactLayerControl extends StatelessWidget {
+  const _CompactLayerControl({
     required this.name,
     required this.control,
     required this.onToggle,
@@ -373,200 +372,145 @@ class _LayerControlRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0C0C0C),
-        borderRadius: BorderRadius.circular(12),  // Sexy curves
-        border: Border.all(color: const Color(0xFF252525), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Toggle + LED row
-          Row(
-            children: [
-              // LED indicator (bigger, rounded)
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: control.enabled ? const Color(0xFFFF3333) : const Color(0xFF1A0505),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: control.enabled ? const Color(0xFFFF5555) : const Color(0xFF150505),
-                    width: 1,
-                  ),
-                  boxShadow: control.enabled
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFFF3333).withValues(alpha: 0.95),
-                            blurRadius: 10,
-                            spreadRadius: 3,
-                          ),
-                        ]
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 12),
-              
-              // Toggle switch (curved, pill-shaped with 3D protrusion)
-              GestureDetector(
-                onTap: () => onToggle(!control.enabled),
-                child: Container(
-                  width: 52,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: control.enabled
-                          ? [const Color(0xFF2A2A2A), const Color(0xFF151515)]
-                          : [const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
-                    ),
-                    borderRadius: BorderRadius.circular(15),  // Pill shape!
-                    border: Border.all(
-                      color: control.enabled ? const Color(0xFF353535) : const Color(0xFF0F0F0F),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withValues(alpha: 0.7), blurRadius: 4, offset: const Offset(0, 3)),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      AnimatedPositioned(
-                        duration: const Duration(milliseconds: 150),
-                        curve: Curves.easeInOut,
-                        left: control.enabled ? 26 : 2,
-                        top: 2,
-                        child: Container(
-                          width: 24,
-                          height: 24,
-                          decoration: BoxDecoration(
-                            // 3D protruding knob with off-center highlight
-                            gradient: RadialGradient(
-                              center: const Alignment(-0.4, -0.4),
-                              colors: control.enabled
-                                  ? [
-                                      const Color(0xFF757575),  // Bright highlight
-                                      const Color(0xFF555555),  // Upper
-                                      const Color(0xFF3A3A3A),  // Middle
-                                      const Color(0xFF252525),  // Shadow side
-                                    ]
-                                  : [
-                                      const Color(0xFF4A4A4A),
-                                      const Color(0xFF353535),
-                                      const Color(0xFF252525),
-                                      const Color(0xFF1A1A1A),
-                                    ],
-                              stops: const [0.0, 0.3, 0.7, 1.0],
-                            ),
-                            borderRadius: BorderRadius.circular(12),  // Round knob
-                            border: Border.all(
-                              color: control.enabled ? const Color(0xFF505050) : const Color(0xFF252525),
-                              width: 1,
-                            ),
-                            boxShadow: [
-                              // 3D floating shadow
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.6),
-                                blurRadius: 5,
-                                offset: const Offset(0, 3),
-                                spreadRadius: 0,
-                              ),
-                              // Top highlight rim
-                              BoxShadow(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                blurRadius: 2,
-                                offset: const Offset(0, -1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              
-              const SizedBox(width: 12),
-              
-              // Layer name
-              Expanded(
-                child: Text(
-                  name,
-                  style: TextStyle(
-                    color: control.enabled ? const Color(0xFFD0D0D0) : const Color(0xFF454545),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 10),
-          
-          // GAIN label + knob (bigger)
-          Row(
-            children: [
-              const SizedBox(width: 24),
-              const Text('GAIN',
-                style: TextStyle(color: Color(0xFF505050), fontSize: 8, fontWeight: FontWeight.w600, letterSpacing: 1),
-              ),
-              const SizedBox(width: 10),
-              
-              // Rotary knob (bigger - 48x48)
-              GestureDetector(
-                onPanUpdate: (details) {
-                  final change = -details.delta.dy * 0.005;
-                  final newGain = (control.gain + change).clamp(0.0, 1.0);
-                  onGainChanged(newGain);
-                },
-                child: _RotaryKnob(value: control.gain, enabled: control.enabled),
-              ),
-              
-              const SizedBox(width: 8),
-              
-              // Value display (curved)
-              Container(
-                width: 36,
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF080808),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: const Color(0xFF252525)),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.4), blurRadius: 2, offset: const Offset(0, 1)),
+    return GestureDetector(
+      onTap: () => onToggle(!control.enabled),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 68,
+        height: 80,
+        decoration: BoxDecoration(
+          // Button style: white/beige gradient like reference
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: control.enabled
+                ? [
+                    const Color(0xFFE8E0D8),  // Light cream top
+                    const Color(0xFFD8D0C8),  // Cream middle
+                    const Color(0xFFC8C0B8),  // Darker cream bottom
+                  ]
+                : [
+                    const Color(0xFFB8B0A8),  // Dimmed top
+                    const Color(0xFFA8A098),  // Dimmed middle
+                    const Color(0xFF989088),  // Dimmed bottom
                   ],
-                ),
-                child: Text(
-                  '${(control.gain * 100).round()}',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: control.enabled ? const Color(0xFF70C4D4) : const Color(0xFF353535),
-                    fontSize: 10,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
           ),
-        ],
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: control.enabled
+                ? const Color(0xFFFF6B00).withValues(alpha: 0.8)  // Orange glow border
+                : const Color(0xFF505050),
+            width: control.enabled ? 2 : 1,
+          ),
+          boxShadow: control.enabled
+              ? [
+                  // Orange glow effect
+                  BoxShadow(
+                    color: const Color(0xFFFF6B00).withValues(alpha: 0.6),
+                    blurRadius: 12,
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: const Color(0xFFFF6B00).withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.4),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Layer name (vertical text, dark)
+            Text(
+              name,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: control.enabled ? const Color(0xFF1A1A1A) : const Color(0xFF606060),
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                height: 1.1,
+              ),
+            ),
+            const SizedBox(height: 6),
+            // Small gain knob
+            GestureDetector(
+              onPanUpdate: (details) {
+                final change = -details.delta.dy * 0.01;
+                final newGain = (control.gain + change).clamp(0.0, 1.0);
+                onGainChanged(newGain);
+              },
+              child: _MiniKnob(value: control.gain, enabled: control.enabled),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+// Mini knob for compact layout
+class _MiniKnob extends StatelessWidget {
+  const _MiniKnob({required this.value, required this.enabled});
+
+  final double value;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: CustomPaint(
+        painter: _MiniKnobPainter(value: value, enabled: enabled),
+      ),
+    );
+  }
+}
+
+class _MiniKnobPainter extends CustomPainter {
+  _MiniKnobPainter({required this.value, required this.enabled});
+
+  final double value;
+  final bool enabled;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    // Knob body
+    final bodyPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.3, -0.3),
+        colors: enabled
+            ? [const Color(0xFF606060), const Color(0xFF404040), const Color(0xFF252525)]
+            : [const Color(0xFF454545), const Color(0xFF353535), const Color(0xFF202020)],
+      ).createShader(Rect.fromCircle(center: center, radius: radius));
+    canvas.drawCircle(center, radius - 1, bodyPaint);
+
+    // Indicator
+    final angle = -math.pi * 0.75 + value * math.pi * 1.5;
+    final indicatorEnd = Offset(
+      center.dx + (radius - 4) * math.cos(angle),
+      center.dy + (radius - 4) * math.sin(angle),
+    );
+    final indicatorPaint = Paint()
+      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF3A3A3A)
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(center, indicatorEnd, indicatorPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _MiniKnobPainter oldDelegate) =>
+      oldDelegate.value != value || oldDelegate.enabled != enabled;
 }
 
 class _RotaryKnob extends StatelessWidget {
@@ -697,29 +641,27 @@ class _ChartArea extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = constraints.maxWidth;
         return Container(
-          margin: EdgeInsets.only(
-            left: 12,
-            top: 12,
-            bottom: 12,
-            right: 12 + (width * 0.05),  // 5% narrower on right
+          margin: const EdgeInsets.only(
+            left: 8,
+            top: 60,  // Space for top bar
+            bottom: 40,  // Space for compass
+            right: 8,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),  // Sexy curves
-            color: const Color(0xFF080C10),
+            borderRadius: BorderRadius.circular(10),
+            color: const Color(0xFF060A0E),
             boxShadow: [
-              // Gradient drop shadow (fading up)
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-                spreadRadius: 2,
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+                spreadRadius: 1,
               ),
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),  // Curved
+            borderRadius: BorderRadius.circular(8),
             child: CustomPaint(
               painter: _ChartPainter(layerControls: layerControls),
               child: Container(),
@@ -1364,38 +1306,48 @@ class _ToolboxMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280,
+      width: 260,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF1A2530), Color(0xFF0D1520)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1A1A1A), Color(0xFF0D0D0D), Color(0xFF080808)],
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF3A4A5A), width: 2)),
+        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 3)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.6), blurRadius: 20, offset: const Offset(5, 0)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.8), blurRadius: 0, offset: const Offset(4, 0)),
         ],
       ),
       child: Column(
         children: [
+          // Header matching data bezel style
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Color(0xFF2A3A4A)))),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF080808),
+              border: Border(
+                bottom: BorderSide(color: const Color(0xFF2A2A2A).withValues(alpha: 0.5), width: 1),
+              ),
+            ),
             child: Row(
               children: [
-                const Icon(Icons.settings, color: Color(0xFFD7A84A), size: 24),
-                const SizedBox(width: 12),
+                const Icon(Icons.settings, color: Color(0xFFD7A84A), size: 20),
+                const SizedBox(width: 10),
                 const Expanded(
                   child: Text('TOOLBOX',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 2),
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 2),
                   ),
                 ),
                 GestureDetector(
                   onTap: onClose,
                   child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: const Color(0xFF2A3A4A), borderRadius: BorderRadius.circular(6)),
-                    child: const Icon(Icons.close, color: Color(0xFF70C4D4), size: 20),
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF252525),
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: const Color(0xFF353535)),
+                    ),
+                    child: const Icon(Icons.close, color: Color(0xFFD7A84A), size: 18),
                   ),
                 ),
               ],
@@ -1403,7 +1355,7 @@ class _ToolboxMenu extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               children: const [
                 _MenuItem(icon: Icons.speed, label: 'Settings'),
                 _MenuItem(icon: Icons.book, label: "Captain's Log"),
@@ -1414,7 +1366,7 @@ class _ToolboxMenu extends StatelessWidget {
                 _MenuItem(icon: Icons.warning, label: 'Emergency Waypoint Contact'),
                 _MenuItem(icon: Icons.link, label: 'API & Data Sources'),
                 _MenuItem(icon: Icons.person, label: 'User Settings'),
-                Divider(color: Color(0xFF2A3A4A)),
+                SizedBox(height: 8),
                 _MenuItem(icon: Icons.logout, label: 'Log Out', isDestructive: true),
               ],
             ),
@@ -1433,31 +1385,57 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? const Color(0xFFE46353) : const Color(0xFFE8F1F3);
+    // Destructive uses red styling, normal uses white/beige button
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
+      margin: const EdgeInsets.only(bottom: 6),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {},
           borderRadius: BorderRadius.circular(8),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF0A1520),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: isDestructive
+                    ? [
+                        const Color(0xFFE46353).withValues(alpha: 0.9),
+                        const Color(0xFFD45343),
+                      ]
+                    : [
+                        const Color(0xFFE8E0D8),
+                        const Color(0xFFD8D0C8),
+                      ],
+              ),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFF2A3A4A)),
+              border: Border.all(
+                color: isDestructive ? const Color(0xFFB84333) : const Color(0xFFB8A898),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               children: [
-                Icon(icon, color: color.withValues(alpha: 0.8), size: 22),
-                const SizedBox(width: 14),
+                Icon(icon, color: const Color(0xFF1A1A1A).withValues(alpha: 0.9), size: 20),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(label,
-                    style: TextStyle(color: color, fontSize: 14, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      color: isDestructive ? const Color(0xFF1A0A0A) : const Color(0xFF1A1A1A),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: color.withValues(alpha: 0.5), size: 20),
+                Icon(Icons.chevron_right, color: const Color(0xFF303030).withValues(alpha: 0.5), size: 18),
               ],
             ),
           ),
