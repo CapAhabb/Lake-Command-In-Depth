@@ -64,8 +64,8 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                     children: [
                       // Main chart with overlays
                       Positioned(
-                        left: dataBezelVisible ? 170 : 0,  // Tighter panel
-                        right: 20,  // 10% margin on right
+                        left: dataBezelVisible ? 150 : 0,  // Tighter panel
+                        right: 40,  // 10% more margin on right
                         top: 0,
                         bottom: 0,
                         child: _ChartArea(layerControls: layerControls),
@@ -75,7 +75,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        left: dataBezelVisible ? 0 : -170,  // Tighter panel
+                        left: dataBezelVisible ? 0 : -150,  // Tighter panel
                         top: 0,
                         bottom: 0,
                         child: _DataBezelPanel(
@@ -111,7 +111,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       
                       // Menu button to toggle toolbox
                       Positioned(
-                        left: dataBezelVisible ? 180 : 10,
+                        left: dataBezelVisible ? 155 : 10,
                         top: 15,
                         child: _MenuButton(
                           onTap: () {
@@ -125,7 +125,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       // Top info bar
                       Positioned(
                         top: 15,
-                        left: dataBezelVisible ? 230 : 60,
+                        left: dataBezelVisible ? 200 : 50,
                         right: 80,
                         child: const _TopInfoBar(),
                       ),
@@ -195,7 +195,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
   }
 }
 
-// Plastic housing widget - matching bezelidea.jpeg reference
+// Plastic housing widget - EXACT match to bezelidea.jpeg
 class _PlasticHousing extends StatelessWidget {
   final Widget child;
   const _PlasticHousing({required this.child});
@@ -204,59 +204,52 @@ class _PlasticHousing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0F0F0F),
-        borderRadius: BorderRadius.circular(24),
+        color: const Color(0xFF080808),  // Nearly black plastic
+        borderRadius: BorderRadius.circular(16),  // Rounded corners like photo
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF252525),  // Top-left highlight
-            Color(0xFF1A1A1A),  // Upper
-            Color(0xFF101010),  // Middle
-            Color(0xFF0A0A0A),  // Bottom-right shadow
+            Color(0xFF2A2A2A),  // Highlight
+            Color(0xFF151515),  // Upper
+            Color(0xFF0A0A0A),  // Darker
+            Color(0xFF050505),  // Shadow edge
           ],
-          stops: [0.0, 0.3, 0.6, 1.0],
+          stops: [0.0, 0.2, 0.7, 1.0],
         ),
-        border: Border.all(color: const Color(0xFF303030), width: 2),
+        border: Border.all(color: const Color(0xFF1A1A1A), width: 1),
         boxShadow: [
-          // Deep outer shadow
+          // Deep shadow for 3D depth
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.95),
-            blurRadius: 60,
-            offset: const Offset(0, 25),
-            spreadRadius: 5,
+            blurRadius: 40,
+            offset: const Offset(0, 20),
+            spreadRadius: 2,
           ),
-          // Top-left bevel highlight
+          // Inner bevel highlight
           BoxShadow(
-            color: Colors.white.withValues(alpha: 0.05),
+            color: const Color(0xFF3A3A3A).withValues(alpha: 0.15),
             blurRadius: 0,
-            offset: const Offset(-2, -2),
-          ),
-          // Bottom-right inset shadow
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.8),
-            blurRadius: 0,
-            offset: const Offset(4, 4),
+            offset: const Offset(-1, -1),
           ),
         ],
       ),
       child: Container(
-        margin: const EdgeInsets.all(6),
+        margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(14),
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
               Color(0xFF1A1A1A),
               Color(0xFF0D0D0D),
-              Color(0xFF080808),
             ],
           ),
-          border: Border.all(color: const Color(0xFF050505), width: 2),
+          border: Border.all(color: const Color(0xFF030303), width: 2),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: child,
         ),
       ),
@@ -270,7 +263,7 @@ class LayerControl {
   double gain;
 }
 
-// Data Bezel Panel (left side with toggles, LEDs, and knobs)
+// Data Bezel Panel - EXACT match to bezelidea.jpeg (beige panel)
 class _DataBezelPanel extends StatelessWidget {
   const _DataBezelPanel({
     required this.layerControls,
@@ -285,21 +278,25 @@ class _DataBezelPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160,  // Tighter panel
+      width: 140,  // Tighter panel
       decoration: BoxDecoration(
+        // Beige panel like reference photo
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A1A1A), Color(0xFF101010), Color(0xFF0A0A0A)],
+          colors: [
+            Color(0xFFD8D0C8),  // Light beige top
+            Color(0xFFC8C0B8),  // Beige middle
+            Color(0xFFB8B0A8),  // Darker beige bottom
+          ],
         ),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(16),
-          bottomLeft: Radius.circular(16),
+          topLeft: Radius.circular(12),
+          bottomLeft: Radius.circular(12),
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 3)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.8),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 0,
             offset: const Offset(2, 0),
           ),
@@ -307,44 +304,40 @@ class _DataBezelPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header
+          // Header - dark strip like reference
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF080808),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16),
-              ),
-              border: Border(
-                bottom: BorderSide(color: const Color(0xFF2A2A2A).withValues(alpha: 0.5), width: 1),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1A1A1A),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12),
               ),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.layers, color: Color(0xFFD7A84A), size: 16),
-                SizedBox(width: 6),
-                Expanded(
+                const Icon(Icons.layers, color: Color(0xFFD7A84A), size: 14),
+                const SizedBox(width: 4),
+                const Expanded(
                   child: Text('DATA BEZEL',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1.5),
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1),
                   ),
                 ),
               ],
             ),
           ),
           
-          // Layer controls - compact grid layout
+          // Layer controls - wrap layout
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               child: Wrap(
-                spacing: 6,
-                runSpacing: 6,
+                spacing: 4,
+                runSpacing: 4,
                 children: layerControls.entries.map((entry) {
-                  return _CompactLayerControl(
+                  return _ButtonLayerControl(
                     name: entry.key,
                     control: entry.value,
                     onToggle: (enabled) => onToggle(entry.key, enabled),
-                    onGainChanged: (gain) => onGainChanged(entry.key, gain),
                   );
                 }).toList(),
               ),
@@ -356,19 +349,17 @@ class _DataBezelPanel extends StatelessWidget {
   }
 }
 
-// Compact layer control with button-style toggle
-class _CompactLayerControl extends StatelessWidget {
-  const _CompactLayerControl({
+// Button layer control - EXACT match to bezelidea.jpeg buttons
+class _ButtonLayerControl extends StatelessWidget {
+  const _ButtonLayerControl({
     required this.name,
     required this.control,
     required this.onToggle,
-    required this.onGainChanged,
   });
 
   final String name;
   final LayerControl control;
   final void Function(bool) onToggle;
-  final void Function(double) onGainChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -376,79 +367,42 @@ class _CompactLayerControl extends StatelessWidget {
       onTap: () => onToggle(!control.enabled),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 68,
-        height: 80,
+        width: 60,
+        height: 36,
         decoration: BoxDecoration(
-          // Button style: white/beige gradient like reference
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: control.enabled
-                ? [
-                    const Color(0xFFE8E0D8),  // Light cream top
-                    const Color(0xFFD8D0C8),  // Cream middle
-                    const Color(0xFFC8C0B8),  // Darker cream bottom
-                  ]
-                : [
-                    const Color(0xFFB8B0A8),  // Dimmed top
-                    const Color(0xFFA8A098),  // Dimmed middle
-                    const Color(0xFF989088),  // Dimmed bottom
-                  ],
-          ),
-          borderRadius: BorderRadius.circular(8),
+          // White button like reference photo
+          color: control.enabled ? Colors.white : const Color(0xFFE0E0E0),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: control.enabled
-                ? const Color(0xFFFF6B00).withValues(alpha: 0.8)  // Orange glow border
-                : const Color(0xFF505050),
+                ? const Color(0xFFFF6600)  // Thin orange line when active
+                : const Color(0xFFA0A0A0),
             width: control.enabled ? 2 : 1,
           ),
-          boxShadow: control.enabled
-              ? [
-                  // Orange glow effect
-                  BoxShadow(
-                    color: const Color(0xFFFF6B00).withValues(alpha: 0.6),
-                    blurRadius: 12,
-                    spreadRadius: 1,
-                  ),
-                  BoxShadow(
-                    color: const Color(0xFFFF6B00).withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Layer name (vertical text, dark)
-            Text(
-              name,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: control.enabled ? const Color(0xFF1A1A1A) : const Color(0xFF606060),
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                height: 1.1,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: control.enabled ? 0.3 : 0.15),
+              blurRadius: 2,
+              offset: const Offset(0, 2),
+            ),
+            if (control.enabled)
+              BoxShadow(
+                color: const Color(0xFFFF6600).withValues(alpha: 0.4),  // Orange glow
+                blurRadius: 6,
+                spreadRadius: 0,
               ),
-            ),
-            const SizedBox(height: 6),
-            // Small gain knob
-            GestureDetector(
-              onPanUpdate: (details) {
-                final change = -details.delta.dy * 0.01;
-                final newGain = (control.gain + change).clamp(0.0, 1.0);
-                onGainChanged(newGain);
-              },
-              child: _MiniKnob(value: control.gain, enabled: control.enabled),
-            ),
           ],
+        ),
+        child: Center(
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: const Color(0xFF202020),  // Dark text like photo
+              fontSize: 8,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         ),
       ),
     );
@@ -631,7 +585,7 @@ class _KnobPainter extends CustomPainter {
       oldDelegate.value != value || oldDelegate.enabled != enabled;
 }
 
-// Chart Area with data overlays (95% width)
+// Chart Area - dark screen like bezelidea.jpeg
 class _ChartArea extends StatelessWidget {
   const _ChartArea({required this.layerControls});
 
@@ -639,36 +593,32 @@ class _ChartArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          margin: const EdgeInsets.only(
-            left: 8,
-            top: 60,  // Space for top bar
-            bottom: 40,  // Space for compass
-            right: 8,
+    return Container(
+      margin: const EdgeInsets.only(
+        left: 6,
+        top: 50,  // Space for top bar
+        bottom: 30,  // Space for compass
+        right: 6,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: const Color(0xFF050505),  // Very dark like photo
+        border: Border.all(color: const Color(0xFF0A0A0A), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.8),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
           ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xFF060A0E),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.5),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CustomPaint(
-              painter: _ChartPainter(layerControls: layerControls),
-              child: Container(),
-            ),
-          ),
-        );
-      },
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: CustomPaint(
+          painter: _ChartPainter(layerControls: layerControls),
+          child: Container(),
+        ),
+      ),
     );
   }
 }
@@ -1306,48 +1256,41 @@ class _ToolboxMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 260,
+      width: 240,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF1A1A1A), Color(0xFF0D0D0D), Color(0xFF080808)],
+          colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 3)),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.8), blurRadius: 0, offset: const Offset(4, 0)),
-        ],
+        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 2)),
       ),
       child: Column(
         children: [
-          // Header matching data bezel style
+          // Dark header like reference
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFF080808),
-              border: Border(
-                bottom: BorderSide(color: const Color(0xFF2A2A2A).withValues(alpha: 0.5), width: 1),
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: const BoxDecoration(
+              color: Color(0xFF050505),
             ),
             child: Row(
               children: [
-                const Icon(Icons.settings, color: Color(0xFFD7A84A), size: 20),
-                const SizedBox(width: 10),
+                const Icon(Icons.settings, color: Color(0xFFD7A84A), size: 18),
+                const SizedBox(width: 8),
                 const Expanded(
                   child: Text('TOOLBOX',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 2),
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.5),
                   ),
                 ),
                 GestureDetector(
                   onTap: onClose,
                   child: Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: const Color(0xFF252525),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: const Color(0xFF353535)),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Icon(Icons.close, color: Color(0xFFD7A84A), size: 18),
+                    child: const Icon(Icons.close, color: Color(0xFFD7A84A), size: 16),
                   ),
                 ),
               ],
@@ -1355,7 +1298,7 @@ class _ToolboxMenu extends StatelessWidget {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               children: const [
                 _MenuItem(icon: Icons.speed, label: 'Settings'),
                 _MenuItem(icon: Icons.book, label: "Captain's Log"),
@@ -1363,10 +1306,10 @@ class _ToolboxMenu extends StatelessWidget {
                 _MenuItem(icon: Icons.emoji_events, label: 'Tournaments'),
                 _MenuItem(icon: Icons.cloud, label: 'Weather'),
                 _MenuItem(icon: Icons.credit_card, label: 'Subscription'),
-                _MenuItem(icon: Icons.warning, label: 'Emergency Waypoint Contact'),
+                _MenuItem(icon: Icons.warning, label: 'Emergency Waypoint'),
                 _MenuItem(icon: Icons.link, label: 'API & Data Sources'),
                 _MenuItem(icon: Icons.person, label: 'User Settings'),
-                SizedBox(height: 8),
+                SizedBox(height: 6),
                 _MenuItem(icon: Icons.logout, label: 'Log Out', isDestructive: true),
               ],
             ),
@@ -1385,57 +1328,45 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Destructive uses red styling, normal uses white/beige button
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
+      margin: const EdgeInsets.only(bottom: 4),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () {},
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: isDestructive
-                    ? [
-                        const Color(0xFFE46353).withValues(alpha: 0.9),
-                        const Color(0xFFD45343),
-                      ]
-                    : [
-                        const Color(0xFFE8E0D8),
-                        const Color(0xFFD8D0C8),
-                      ],
-              ),
-              borderRadius: BorderRadius.circular(8),
+              // White/beige button like reference
+              color: isDestructive ? const Color(0xFFE8E0D8) : Colors.white,
+              borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: isDestructive ? const Color(0xFFB84333) : const Color(0xFFB8A898),
+                color: isDestructive ? const Color(0xFFB0A090) : const Color(0xFFC0C0C0),
                 width: 1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
             child: Row(
               children: [
-                Icon(icon, color: const Color(0xFF1A1A1A).withValues(alpha: 0.9), size: 20),
-                const SizedBox(width: 12),
+                Icon(icon, color: const Color(0xFF303030), size: 16),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(label,
-                    style: TextStyle(
-                      color: isDestructive ? const Color(0xFF1A0A0A) : const Color(0xFF1A1A1A),
-                      fontSize: 13,
+                    style: const TextStyle(
+                      color: Color(0xFF202020),
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: const Color(0xFF303030).withValues(alpha: 0.5), size: 18),
+                Icon(Icons.chevron_right, color: const Color(0xFF606060), size: 14),
               ],
             ),
           ),
