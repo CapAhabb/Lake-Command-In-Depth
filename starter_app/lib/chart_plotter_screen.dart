@@ -64,7 +64,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                     children: [
                       // Main chart with overlays
                       Positioned(
-                        left: dataBezelVisible ? 150 : 0,  // Tighter panel
+                        left: dataBezelVisible ? 130 : 0,  // Tighter panel
                         right: 40,  // 10% more margin on right
                         top: 0,
                         bottom: 0,
@@ -75,7 +75,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        left: dataBezelVisible ? 0 : -150,  // Tighter panel
+                        left: dataBezelVisible ? 0 : -130,  // Tighter panel
                         top: 0,
                         bottom: 0,
                         child: _DataBezelPanel(
@@ -111,7 +111,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       
                       // Menu button to toggle toolbox
                       Positioned(
-                        left: dataBezelVisible ? 155 : 10,
+                        left: dataBezelVisible ? 135 : 10,
                         top: 15,
                         child: _MenuButton(
                           onTap: () {
@@ -125,7 +125,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                       // Top info bar
                       Positioned(
                         top: 15,
-                        left: dataBezelVisible ? 200 : 50,
+                        left: dataBezelVisible ? 180 : 50,
                         right: 80,
                         child: const _TopInfoBar(),
                       ),
@@ -263,7 +263,7 @@ class LayerControl {
   double gain;
 }
 
-// Data Bezel Panel - EXACT match to bezelidea.jpeg (beige panel)
+// Data Bezel Panel - EXACT match to bezelidea.jpeg (dark panel with white buttons)
 class _DataBezelPanel extends StatelessWidget {
   const _DataBezelPanel({
     required this.layerControls,
@@ -278,25 +278,26 @@ class _DataBezelPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 140,  // Tighter panel
+      width: 120,  // Slightly smaller
       decoration: BoxDecoration(
-        // Beige panel like reference photo
+        // Dark panel like bezelidea.jpeg
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFFD8D0C8),  // Light beige top
-            Color(0xFFC8C0B8),  // Beige middle
-            Color(0xFFB8B0A8),  // Darker beige bottom
+            Color(0xFF1A1A1A),  // Dark top
+            Color(0xFF151515),  // Dark middle
+            Color(0xFF101010),  // Darker bottom
           ],
         ),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(12),
-          bottomLeft: Radius.circular(12),
+          topLeft: Radius.circular(10),
+          bottomLeft: Radius.circular(10),
         ),
+        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
+            color: Colors.black.withValues(alpha: 0.8),
             blurRadius: 0,
             offset: const Offset(2, 0),
           ),
@@ -304,35 +305,35 @@ class _DataBezelPanel extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header - dark strip like reference
+          // Header - dark strip
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             decoration: const BoxDecoration(
-              color: Color(0xFF1A1A1A),
+              color: Color(0xFF050505),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12),
+                topLeft: Radius.circular(10),
               ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.layers, color: Color(0xFFD7A84A), size: 14),
+                const Icon(Icons.layers, color: Color(0xFFD7A84A), size: 12),
                 const SizedBox(width: 4),
                 const Expanded(
                   child: Text('DATA BEZEL',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1),
+                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 1),
                   ),
                 ),
               ],
             ),
           ),
           
-          // Layer controls - wrap layout
+          // Layer controls - wrap layout with buttons
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(6),
+              padding: const EdgeInsets.all(4),
               child: Wrap(
-                spacing: 4,
-                runSpacing: 4,
+                spacing: 3,
+                runSpacing: 3,
                 children: layerControls.entries.map((entry) {
                   return _ButtonLayerControl(
                     name: entry.key,
