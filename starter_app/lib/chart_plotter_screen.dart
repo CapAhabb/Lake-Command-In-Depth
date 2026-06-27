@@ -64,18 +64,18 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                     children: [
                       // Main chart with overlays
                       Positioned(
-                        left: dataBezelVisible ? 130 : 0,  // Tighter panel
-                        right: 40,  // 10% more margin on right
+                        left: dataBezelVisible ? 130 : 0, // Tighter panel
+                        right: 40, // 10% more margin on right
                         top: 0,
                         bottom: 0,
                         child: _ChartArea(layerControls: layerControls),
                       ),
-                      
+
                       // Data Bezel (left panel with toggles/knobs)
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
-                        left: dataBezelVisible ? 0 : -130,  // Tighter panel
+                        left: dataBezelVisible ? 0 : -130, // Tighter panel
                         top: 0,
                         bottom: 0,
                         child: _DataBezelPanel(
@@ -92,7 +92,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                           },
                         ),
                       ),
-                      
+
                       // Toolbox menu (slides from left over data bezel)
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 300),
@@ -108,7 +108,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                           },
                         ),
                       ),
-                      
+
                       // Menu button to toggle toolbox
                       Positioned(
                         left: dataBezelVisible ? 135 : 10,
@@ -121,7 +121,7 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                           },
                         ),
                       ),
-                      
+
                       // Top info bar
                       Positioned(
                         top: 15,
@@ -129,14 +129,14 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                         right: 80,
                         child: const _TopInfoBar(),
                       ),
-                      
+
                       // Compass
                       Positioned(
                         right: 25,
                         top: 80,
                         child: const _CompassWidget(),
                       ),
-                      
+
                       // Toggle data bezel button
                       Positioned(
                         right: 25,
@@ -148,11 +148,16 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                             });
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: const Color(0xFF1A1A1A),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: const Color(0xFF3A3A3A)),
+                              border: Border.all(
+                                color: const Color(0xFF3A3A3A),
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black.withValues(alpha: 0.5),
@@ -165,7 +170,9 @@ class _ChartPlotterScreenState extends State<ChartPlotterScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
-                                  dataBezelVisible ? Icons.chevron_left : Icons.chevron_right,
+                                  dataBezelVisible
+                                      ? Icons.chevron_left
+                                      : Icons.chevron_right,
                                   color: const Color(0xFFD7A84A),
                                   size: 18,
                                 ),
@@ -204,16 +211,16 @@ class _PlasticHousing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF080808),  // Nearly black plastic
-        borderRadius: BorderRadius.circular(16),  // Rounded corners like photo
+        color: const Color(0xFF080808), // Nearly black plastic
+        borderRadius: BorderRadius.circular(16), // Rounded corners like photo
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xFF2A2A2A),  // Highlight
-            Color(0xFF151515),  // Upper
-            Color(0xFF0A0A0A),  // Darker
-            Color(0xFF050505),  // Shadow edge
+            Color(0xFF2A2A2A), // Highlight
+            Color(0xFF151515), // Upper
+            Color(0xFF0A0A0A), // Darker
+            Color(0xFF050505), // Shadow edge
           ],
           stops: [0.0, 0.2, 0.7, 1.0],
         ),
@@ -241,17 +248,11 @@ class _PlasticHousing extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1A1A1A),
-              Color(0xFF0D0D0D),
-            ],
+            colors: [Color(0xFF1A1A1A), Color(0xFF0D0D0D)],
           ),
           border: Border.all(color: const Color(0xFF030303), width: 2),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: child,
-        ),
+        child: ClipRRect(borderRadius: BorderRadius.circular(12), child: child),
       ),
     );
   }
@@ -278,23 +279,25 @@ class _DataBezelPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,  // Slightly smaller
+      width: 120, // Slightly smaller
       decoration: BoxDecoration(
         // Dark panel like bezelidea.jpeg
         gradient: const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF1A1A1A),  // Dark top
-            Color(0xFF151515),  // Dark middle
-            Color(0xFF101010),  // Darker bottom
+            Color(0xFF1A1A1A), // Dark top
+            Color(0xFF151515), // Dark middle
+            Color(0xFF101010), // Darker bottom
           ],
         ),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(10),
           bottomLeft: Radius.circular(10),
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 2)),
+        border: const Border(
+          right: BorderSide(color: Color(0xFF050505), width: 2),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.8),
@@ -310,23 +313,27 @@ class _DataBezelPanel extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
             decoration: const BoxDecoration(
               color: Color(0xFF050505),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-              ),
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(10)),
             ),
             child: Row(
               children: [
                 const Icon(Icons.layers, color: Color(0xFFD7A84A), size: 12),
                 const SizedBox(width: 4),
                 const Expanded(
-                  child: Text('DATA BEZEL',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 1),
+                  child: Text(
+                    'DATA BEZEL',
+                    style: TextStyle(
+                      color: Color(0xFFD7A84A),
+                      fontSize: 8,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Layer controls - wrap layout with buttons
           Expanded(
             child: Padding(
@@ -376,19 +383,23 @@ class _ButtonLayerControl extends StatelessWidget {
           borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: control.enabled
-                ? const Color(0xFFFF6600)  // Thin orange line when active
+                ? const Color(0xFFFF6600) // Thin orange line when active
                 : const Color(0xFFA0A0A0),
             width: control.enabled ? 2 : 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: control.enabled ? 0.3 : 0.15),
+              color: Colors.black.withValues(
+                alpha: control.enabled ? 0.3 : 0.15,
+              ),
               blurRadius: 2,
               offset: const Offset(0, 2),
             ),
             if (control.enabled)
               BoxShadow(
-                color: const Color(0xFFFF6600).withValues(alpha: 0.4),  // Orange glow
+                color: const Color(
+                  0xFFFF6600,
+                ).withValues(alpha: 0.4), // Orange glow
                 blurRadius: 6,
                 spreadRadius: 0,
               ),
@@ -399,7 +410,7 @@ class _ButtonLayerControl extends StatelessWidget {
             name,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: const Color(0xFF202020),  // Dark text like photo
+              color: const Color(0xFF202020), // Dark text like photo
               fontSize: 8,
               fontWeight: FontWeight.w700,
             ),
@@ -408,182 +419,6 @@ class _ButtonLayerControl extends StatelessWidget {
       ),
     );
   }
-}
-
-// Mini knob for compact layout
-class _MiniKnob extends StatelessWidget {
-  const _MiniKnob({required this.value, required this.enabled});
-
-  final double value;
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: CustomPaint(
-        painter: _MiniKnobPainter(value: value, enabled: enabled),
-      ),
-    );
-  }
-}
-
-class _MiniKnobPainter extends CustomPainter {
-  _MiniKnobPainter({required this.value, required this.enabled});
-
-  final double value;
-  final bool enabled;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Knob body
-    final bodyPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(-0.3, -0.3),
-        colors: enabled
-            ? [const Color(0xFF606060), const Color(0xFF404040), const Color(0xFF252525)]
-            : [const Color(0xFF454545), const Color(0xFF353535), const Color(0xFF202020)],
-      ).createShader(Rect.fromCircle(center: center, radius: radius));
-    canvas.drawCircle(center, radius - 1, bodyPaint);
-
-    // Indicator
-    final angle = -math.pi * 0.75 + value * math.pi * 1.5;
-    final indicatorEnd = Offset(
-      center.dx + (radius - 4) * math.cos(angle),
-      center.dy + (radius - 4) * math.sin(angle),
-    );
-    final indicatorPaint = Paint()
-      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF3A3A3A)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(center, indicatorEnd, indicatorPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant _MiniKnobPainter oldDelegate) =>
-      oldDelegate.value != value || oldDelegate.enabled != enabled;
-}
-
-class _RotaryKnob extends StatelessWidget {
-  const _RotaryKnob({required this.value, required this.enabled});
-
-  final double value;
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 48,
-      height: 48,
-      child: CustomPaint(
-        painter: _KnobPainter(value: value, enabled: enabled),
-      ),
-    );
-  }
-}
-
-class _KnobPainter extends CustomPainter {
-  _KnobPainter({required this.value, required this.enabled});
-
-  final double value;
-  final bool enabled;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2;
-
-    // Gradient drop shadow (dark at bottom, fading up)
-    final shadowPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Colors.transparent, Color(0x60000000)],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height * 1.5))
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
-    canvas.drawOval(
-      Rect.fromCenter(center: Offset(center.dx, center.dy + 4), width: radius * 1.8, height: radius * 1.2),
-      shadowPaint,
-    );
-
-    // Outer rim (visible edge of 3D knob)
-    final outerRimPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(-0.4, -0.4),
-        colors: [const Color(0xFF404040), const Color(0xFF1A1A1A), const Color(0xFF0A0A0A)],
-        stops: const [0.0, 0.6, 1.0],
-      ).createShader(Rect.fromCircle(center: center, radius: radius - 1));
-    canvas.drawCircle(center, radius - 2, outerRimPaint);
-
-    // Knob body with 3D perspective (side view - top-left light source)
-    final bodyPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(-0.5, -0.5),  // Off-center for side view
-        radius: 1.2,
-        colors: [
-          enabled ? const Color(0xFF707070) : const Color(0xFF454545),  // Bright top highlight
-          enabled ? const Color(0xFF505050) : const Color(0xFF353535),  // Upper portion
-          enabled ? const Color(0xFF3A3A3A) : const Color(0xFF2A2A2A),  // Middle
-          enabled ? const Color(0xFF252525) : const Color(0xFF1A1A1A),  // Shadow side
-        ],
-        stops: const [0.0, 0.3, 0.6, 1.0],
-      ).createShader(Rect.fromCircle(center: center, radius: radius - 4));
-    canvas.drawCircle(center, radius - 4, bodyPaint);
-
-    // "Hot spot" highlight (bright reflection on top-left)
-    final hotSpotPaint = Paint()
-      ..shader = RadialGradient(
-        center: const Alignment(-0.7, -0.7),
-        radius: 0.5,
-        colors: [
-          Colors.white.withValues(alpha: enabled ? 0.4 : 0.2),
-          Colors.white.withValues(alpha: 0.1),
-          Colors.transparent,
-        ],
-      ).createShader(Rect.fromCircle(center: Offset(center.dx - radius * 0.25, center.dy - radius * 0.25), radius: radius * 0.4));
-    canvas.drawCircle(center, radius - 4, hotSpotPaint);
-
-    // Indicator line
-    final angle = -math.pi * 0.75 + value * math.pi * 1.5;
-    final indicatorEnd = Offset(
-      center.dx + (radius - 10) * math.cos(angle),
-      center.dy + (radius - 10) * math.sin(angle),
-    );
-
-    final indicatorPaint = Paint()
-      ..color = enabled ? const Color(0xFFD7A84A) : const Color(0xFF3A3A3A)
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(center, indicatorEnd, indicatorPaint);
-
-    // Center recessed dot
-    final centerDotPaint = Paint()
-      ..shader = RadialGradient(
-        colors: [const Color(0xFF151515), const Color(0xFF050505)],
-      ).createShader(Rect.fromCircle(center: center, radius: 6));
-    canvas.drawCircle(center, 6, centerDotPaint);
-
-    // Top edge highlight bevel
-    final bevelPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius - 4),
-      -math.pi * 1.1,
-      math.pi * 0.7,
-      false,
-      bevelPaint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _KnobPainter oldDelegate) =>
-      oldDelegate.value != value || oldDelegate.enabled != enabled;
 }
 
 // Chart Area - dark screen like bezelidea.jpeg
@@ -597,13 +432,13 @@ class _ChartArea extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(
         left: 6,
-        top: 50,  // Space for top bar
-        bottom: 30,  // Space for compass
+        top: 50, // Space for top bar
+        bottom: 30, // Space for compass
         right: 6,
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: const Color(0xFF050505),  // Very dark like photo
+        color: const Color(0xFF050505), // Very dark like photo
         border: Border.all(color: const Color(0xFF0A0A0A), width: 1),
         boxShadow: [
           BoxShadow(
@@ -632,7 +467,7 @@ class _ChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    
+
     // Background
     final bgPaint = Paint()
       ..shader = const LinearGradient(
@@ -646,7 +481,7 @@ class _ChartPainter extends CustomPainter {
     final gridPaint = Paint()
       ..color = const Color(0xFF1A3040).withValues(alpha: 0.5)
       ..strokeWidth = 0.5;
-    
+
     for (double x = 0; x < size.width; x += 50) {
       canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
     }
@@ -695,17 +530,26 @@ class _ChartPainter extends CustomPainter {
 
   void _drawDepthShading(Canvas canvas, Size size) {
     final depthPaint = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0x000A1520), Color(0x40103020), Color(0x50204030)],
-      ).createShader(Rect.fromLTWH(0, size.height * 0.4, size.width, size.height * 0.6));
-    canvas.drawRect(Rect.fromLTWH(0, size.height * 0.4, size.width, size.height * 0.6), depthPaint);
+      ..shader =
+          const LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0x000A1520), Color(0x40103020), Color(0x50204030)],
+          ).createShader(
+            Rect.fromLTWH(0, size.height * 0.4, size.width, size.height * 0.6),
+          );
+    canvas.drawRect(
+      Rect.fromLTWH(0, size.height * 0.4, size.width, size.height * 0.6),
+      depthPaint,
+    );
   }
 
   void _drawText(Canvas canvas, String text, Offset position, Color color) {
     final textPainter = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: 10)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(color: color, fontSize: 10),
+      ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
@@ -720,25 +564,63 @@ class _ChartPainter extends CustomPainter {
 
     final path1 = Path();
     path1.moveTo(size.width * 0.1, size.height * 0.3);
-    path1.quadraticBezierTo(size.width * 0.3, size.height * 0.25, size.width * 0.5, size.height * 0.4);
-    path1.quadraticBezierTo(size.width * 0.7, size.height * 0.55, size.width * 0.9, size.height * 0.5);
+    path1.quadraticBezierTo(
+      size.width * 0.3,
+      size.height * 0.25,
+      size.width * 0.5,
+      size.height * 0.4,
+    );
+    path1.quadraticBezierTo(
+      size.width * 0.7,
+      size.height * 0.55,
+      size.width * 0.9,
+      size.height * 0.5,
+    );
     canvas.drawPath(path1, paint);
 
     final path2 = Path();
     path2.moveTo(size.width * 0.15, size.height * 0.5);
-    path2.quadraticBezierTo(size.width * 0.4, size.height * 0.6, size.width * 0.6, size.height * 0.55);
-    path2.quadraticBezierTo(size.width * 0.8, size.height * 0.5, size.width * 0.85, size.height * 0.7);
-    canvas.drawPath(path2, paint..color = const Color(0xFF1A4050).withValues(alpha: gain));
+    path2.quadraticBezierTo(
+      size.width * 0.4,
+      size.height * 0.6,
+      size.width * 0.6,
+      size.height * 0.55,
+    );
+    path2.quadraticBezierTo(
+      size.width * 0.8,
+      size.height * 0.5,
+      size.width * 0.85,
+      size.height * 0.7,
+    );
+    canvas.drawPath(
+      path2,
+      paint..color = const Color(0xFF1A4050).withValues(alpha: gain),
+    );
 
     // Depth markers
-    _drawText(canvas, '42ft', Offset(size.width * 0.2, size.height * 0.35), const Color(0xFF4A7080).withValues(alpha: gain));
-    _drawText(canvas, '58ft', Offset(size.width * 0.5, size.height * 0.45), const Color(0xFF4A7080).withValues(alpha: gain));
-    _drawText(canvas, '75ft', Offset(size.width * 0.7, size.height * 0.6), const Color(0xFF4A7080).withValues(alpha: gain));
+    _drawText(
+      canvas,
+      '42ft',
+      Offset(size.width * 0.2, size.height * 0.35),
+      const Color(0xFF4A7080).withValues(alpha: gain),
+    );
+    _drawText(
+      canvas,
+      '58ft',
+      Offset(size.width * 0.5, size.height * 0.45),
+      const Color(0xFF4A7080).withValues(alpha: gain),
+    );
+    _drawText(
+      canvas,
+      '75ft',
+      Offset(size.width * 0.7, size.height * 0.6),
+      const Color(0xFF4A7080).withValues(alpha: gain),
+    );
   }
 
   void _drawBaitDensity(Canvas canvas, Size size, double gain) {
     final opacity = gain * 0.6;
-    
+
     // Bait fish schools (small circles)
     final baitPaint = Paint()
       ..color = const Color(0xFF80A040).withValues(alpha: opacity)
@@ -752,7 +634,11 @@ class _ChartPainter extends CustomPainter {
       final y = center1.dy + 15 * math.sin(angle);
       canvas.drawCircle(Offset(x, y), 3, baitPaint);
     }
-    canvas.drawCircle(center1, 5, baitPaint..color = const Color(0xFF90B050).withValues(alpha: opacity));
+    canvas.drawCircle(
+      center1,
+      5,
+      baitPaint..color = const Color(0xFF90B050).withValues(alpha: opacity),
+    );
 
     // School 2
     final center2 = Offset(size.width * 0.65, size.height * 0.55);
@@ -771,9 +657,21 @@ class _ChartPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     // Fish markers (trophy size)
-    canvas.drawCircle(Offset(size.width * 0.3, size.height * 0.35), 6, speciesPaint);
-    canvas.drawCircle(Offset(size.width * 0.55, size.height * 0.6), 5, speciesPaint);
-    canvas.drawCircle(Offset(size.width * 0.75, size.height * 0.45), 7, speciesPaint);
+    canvas.drawCircle(
+      Offset(size.width * 0.3, size.height * 0.35),
+      6,
+      speciesPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.55, size.height * 0.6),
+      5,
+      speciesPaint,
+    );
+    canvas.drawCircle(
+      Offset(size.width * 0.75, size.height * 0.45),
+      7,
+      speciesPaint,
+    );
 
     // Fish icons
     final iconPaint = Paint()
@@ -781,17 +679,47 @@ class _ChartPainter extends CustomPainter {
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke;
 
-    _drawFishIcon(canvas, Offset(size.width * 0.3, size.height * 0.35), 12, iconPaint);
-    _drawFishIcon(canvas, Offset(size.width * 0.75, size.height * 0.45), 14, iconPaint);
+    _drawFishIcon(
+      canvas,
+      Offset(size.width * 0.3, size.height * 0.35),
+      12,
+      iconPaint,
+    );
+    _drawFishIcon(
+      canvas,
+      Offset(size.width * 0.75, size.height * 0.45),
+      14,
+      iconPaint,
+    );
   }
 
   void _drawFishIcon(Canvas canvas, Offset center, double size, Paint paint) {
     final path = Path()
       ..moveTo(center.dx - size, center.dy)
-      ..quadraticBezierTo(center.dx - size/2, center.dy - size/2, center.dx + size/2, center.dy)
-      ..quadraticBezierTo(center.dx + size, center.dy + size/3, center.dx + size, center.dy)
-      ..quadraticBezierTo(center.dx + size, center.dy - size/3, center.dx + size/2, center.dy)
-      ..quadraticBezierTo(center.dx - size/2, center.dy + size/2, center.dx - size, center.dy);
+      ..quadraticBezierTo(
+        center.dx - size / 2,
+        center.dy - size / 2,
+        center.dx + size / 2,
+        center.dy,
+      )
+      ..quadraticBezierTo(
+        center.dx + size,
+        center.dy + size / 3,
+        center.dx + size,
+        center.dy,
+      )
+      ..quadraticBezierTo(
+        center.dx + size,
+        center.dy - size / 3,
+        center.dx + size / 2,
+        center.dy,
+      )
+      ..quadraticBezierTo(
+        center.dx - size / 2,
+        center.dy + size / 2,
+        center.dx - size,
+        center.dy,
+      );
     canvas.drawPath(path, paint);
   }
 
@@ -809,22 +737,22 @@ class _ChartPainter extends CustomPainter {
         final x = size.width * (0.2 + col * 0.15);
         final y = size.height * (0.3 + row * 0.2);
         final arrowLength = 20 + gain * 15;
-        
+
         // Main line
         canvas.drawLine(
-          Offset(x - arrowLength/2, y),
-          Offset(x + arrowLength/2, y),
+          Offset(x - arrowLength / 2, y),
+          Offset(x + arrowLength / 2, y),
           currentPaint,
         );
         // Arrow head
         canvas.drawLine(
-          Offset(x + arrowLength/2, y),
-          Offset(x + arrowLength/2 - 6, y - 4),
+          Offset(x + arrowLength / 2, y),
+          Offset(x + arrowLength / 2 - 6, y - 4),
           currentPaint,
         );
         canvas.drawLine(
-          Offset(x + arrowLength/2, y),
-          Offset(x + arrowLength/2 - 6, y + 4),
+          Offset(x + arrowLength / 2, y),
+          Offset(x + arrowLength / 2 - 6, y + 4),
           currentPaint,
         );
       }
@@ -843,7 +771,12 @@ class _ChartPainter extends CustomPainter {
 
     // Temperature legend
     final textColor = const Color(0xFF70C4D4).withValues(alpha: gain);
-    _drawText(canvas, '58°F', Offset(size.width - 50, size.height - 30), textColor);
+    _drawText(
+      canvas,
+      '58°F',
+      Offset(size.width - 50, size.height - 30),
+      textColor,
+    );
     _drawText(canvas, '42°F', Offset(10, 20), textColor);
   }
 
@@ -856,9 +789,13 @@ class _ChartPainter extends CustomPainter {
     for (int i = 0; i < 4; i++) {
       final x = size.width * (0.2 + i * 0.2);
       final y = 30.0;
-      
+
       // Cloud symbol
-      canvas.drawCircle(Offset(x, y), 8, weatherPaint..style = PaintingStyle.fill);
+      canvas.drawCircle(
+        Offset(x, y),
+        8,
+        weatherPaint..style = PaintingStyle.fill,
+      );
       canvas.drawCircle(Offset(x + 6, y - 3), 6, weatherPaint);
       canvas.drawCircle(Offset(x + 10, y), 7, weatherPaint);
     }
@@ -909,10 +846,10 @@ class _MenuButton extends StatelessWidget {
           gradient: RadialGradient(
             center: const Alignment(-0.4, -0.4),
             colors: [
-              const Color(0xFF454545),  // Bright top-left
-              const Color(0xFF353535),  // Upper
-              const Color(0xFF252525),  // Middle
-              const Color(0xFF151515),  // Shadow side
+              const Color(0xFF454545), // Bright top-left
+              const Color(0xFF353535), // Upper
+              const Color(0xFF252525), // Middle
+              const Color(0xFF151515), // Shadow side
             ],
             stops: const [0.0, 0.3, 0.7, 1.0],
           ),
@@ -941,10 +878,7 @@ class _MenuButton extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 center: const Alignment(-0.3, -0.3),
-                colors: [
-                  const Color(0xFF555555),
-                  const Color(0xFF353535),
-                ],
+                colors: [const Color(0xFF555555), const Color(0xFF353535)],
               ),
               shape: BoxShape.circle,
               boxShadow: [
@@ -976,10 +910,10 @@ class _CompassWidget extends StatelessWidget {
         gradient: RadialGradient(
           center: const Alignment(-0.3, -0.3),
           colors: [
-            const Color(0xFF454545),  // Top-left highlight
-            const Color(0xFF353535),  // Upper
-            const Color(0xFF252525),  // Middle
-            const Color(0xFF151515),  // Shadow
+            const Color(0xFF454545), // Top-left highlight
+            const Color(0xFF353535), // Upper
+            const Color(0xFF252525), // Middle
+            const Color(0xFF151515), // Shadow
           ],
           stops: const [0.0, 0.3, 0.7, 1.0],
         ),
@@ -1025,18 +959,26 @@ class _CompassWidget extends StatelessWidget {
             Container(
               decoration: BoxDecoration(
                 gradient: RadialGradient(
-                  colors: [Colors.black.withValues(alpha: 0.3), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.3),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),
-            Text('045°',
+            Text(
+              '045°',
               style: TextStyle(
                 color: const Color(0xFFD7A84A),
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
                 fontFamily: 'monospace',
                 shadows: [
-                  Shadow(color: Colors.black.withValues(alpha: 0.8), offset: const Offset(1, 1), blurRadius: 2),
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.8),
+                    offset: const Offset(1, 1),
+                    blurRadius: 2,
+                  ),
                 ],
               ),
             ),
@@ -1071,7 +1013,11 @@ class _CompassPainter extends CustomPainter {
       final innerY = center.dy + 24 * math.sin(angle);
       final outer = center.dx + 28 * math.cos(angle);
       final outerY = center.dy + 28 * math.sin(angle);
-      canvas.drawLine(Offset(inner, innerY), Offset(outer, outerY), paint..strokeWidth = i % 2 == 0 ? 2 : 1);
+      canvas.drawLine(
+        Offset(inner, innerY),
+        Offset(outer, outerY),
+        paint..strokeWidth = i % 2 == 0 ? 2 : 1,
+      );
     }
   }
 
@@ -1092,15 +1038,15 @@ class _TopInfoBar extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF1A1A1A),  // Top highlight
-            Color(0xFF0F0F0F),  // Upper
-            Color(0xFF0A0A0A),  // Main
-            Color(0xFF050505),  // Bottom shadow
+            Color(0xFF1A1A1A), // Top highlight
+            Color(0xFF0F0F0F), // Upper
+            Color(0xFF0A0A0A), // Main
+            Color(0xFF050505), // Bottom shadow
           ],
         ),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: const Color(0xFF252525),  // Top/left bevel
+          color: const Color(0xFF252525), // Top/left bevel
           width: 1,
         ),
         boxShadow: [
@@ -1118,28 +1064,32 @@ class _TopInfoBar extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Row(
         children: [
-          Row(
-            children: [
-              // 3D anchor icon
-              Depth3DIcon(icon: Icons.anchor, size: 20),
-              SizedBox(width: 10),
-              // 3D text effect for branding
-              Depth3DText(text: 'LAKE COMMAND IN DEPTH'),
-            ],
+          const Depth3DIcon(icon: Icons.anchor, size: 20),
+          const SizedBox(width: 10),
+          const Flexible(
+            flex: 3,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Depth3DText(text: 'LAKE COMMAND IN DEPTH'),
+            ),
           ),
-          Row(
-            children: [
-              _DataChip(label: 'LAT', value: '42.485'),
-              SizedBox(width: 12),
-              _DataChip(label: 'LON', value: '-86.415'),
-              SizedBox(width: 12),
-              _DataChip(label: 'SPD', value: '5.2 kn'),
-              SizedBox(width: 12),
-              _DataChip(label: 'HDG', value: '045°'),
-            ],
+          const SizedBox(width: 12),
+          Flexible(
+            flex: 4,
+            child: Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 12,
+              runSpacing: 4,
+              children: const [
+                _DataChip(label: 'LAT', value: '42.485'),
+                _DataChip(label: 'LON', value: '-86.415'),
+                _DataChip(label: 'SPD', value: '5.2 kn'),
+                _DataChip(label: 'HDG', value: '045°'),
+              ],
+            ),
           ),
         ],
       ),
@@ -1211,7 +1161,11 @@ class Depth3DText extends StatelessWidget {
             fontWeight: FontWeight.w800,
             letterSpacing: 2,
             shadows: const [
-              Shadow(color: Colors.white, offset: Offset(-1, -1), blurRadius: 0),
+              Shadow(
+                color: Colors.white,
+                offset: Offset(-1, -1),
+                blurRadius: 0,
+              ),
             ],
           ),
         ),
@@ -1239,11 +1193,22 @@ class _DataChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('$label: ',
-          style: const TextStyle(color: Color(0xFF6A8090), fontSize: 11, fontWeight: FontWeight.w600),
+        Text(
+          '$label: ',
+          style: const TextStyle(
+            color: Color(0xFF6A8090),
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        Text(value,
-          style: const TextStyle(color: Color(0xFF70C4D4), fontSize: 11, fontFamily: 'monospace', fontWeight: FontWeight.w700),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Color(0xFF70C4D4),
+            fontSize: 11,
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
     );
@@ -1264,23 +1229,29 @@ class _ToolboxMenu extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
         ),
-        border: const Border(right: BorderSide(color: Color(0xFF050505), width: 2)),
+        border: const Border(
+          right: BorderSide(color: Color(0xFF050505), width: 2),
+        ),
       ),
       child: Column(
         children: [
           // Dark header like reference
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: const BoxDecoration(
-              color: Color(0xFF050505),
-            ),
+            decoration: const BoxDecoration(color: Color(0xFF050505)),
             child: Row(
               children: [
                 const Icon(Icons.settings, color: Color(0xFFD7A84A), size: 18),
                 const SizedBox(width: 8),
                 const Expanded(
-                  child: Text('TOOLBOX',
-                    style: TextStyle(color: Color(0xFFD7A84A), fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.5),
+                  child: Text(
+                    'TOOLBOX',
+                    style: TextStyle(
+                      color: Color(0xFFD7A84A),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -1291,7 +1262,11 @@ class _ToolboxMenu extends StatelessWidget {
                       color: const Color(0xFF252525),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Icon(Icons.close, color: Color(0xFFD7A84A), size: 16),
+                    child: const Icon(
+                      Icons.close,
+                      color: Color(0xFFD7A84A),
+                      size: 16,
+                    ),
                   ),
                 ),
               ],
@@ -1311,7 +1286,11 @@ class _ToolboxMenu extends StatelessWidget {
                 _MenuItem(icon: Icons.link, label: 'API & Data Sources'),
                 _MenuItem(icon: Icons.person, label: 'User Settings'),
                 SizedBox(height: 6),
-                _MenuItem(icon: Icons.logout, label: 'Log Out', isDestructive: true),
+                _MenuItem(
+                  icon: Icons.logout,
+                  label: 'Log Out',
+                  isDestructive: true,
+                ),
               ],
             ),
           ),
@@ -1325,7 +1304,11 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isDestructive;
-  const _MenuItem({required this.icon, required this.label, this.isDestructive = false});
+  const _MenuItem({
+    required this.icon,
+    required this.label,
+    this.isDestructive = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1343,7 +1326,9 @@ class _MenuItem extends StatelessWidget {
               color: isDestructive ? const Color(0xFFE8E0D8) : Colors.white,
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: isDestructive ? const Color(0xFFB0A090) : const Color(0xFFC0C0C0),
+                color: isDestructive
+                    ? const Color(0xFFB0A090)
+                    : const Color(0xFFC0C0C0),
                 width: 1,
               ),
               boxShadow: [
@@ -1359,7 +1344,8 @@ class _MenuItem extends StatelessWidget {
                 Icon(icon, color: const Color(0xFF303030), size: 16),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(label,
+                  child: Text(
+                    label,
                     style: const TextStyle(
                       color: Color(0xFF202020),
                       fontSize: 11,
@@ -1367,7 +1353,11 @@ class _MenuItem extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: const Color(0xFF606060), size: 14),
+                Icon(
+                  Icons.chevron_right,
+                  color: const Color(0xFF606060),
+                  size: 14,
+                ),
               ],
             ),
           ),

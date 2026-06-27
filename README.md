@@ -1,37 +1,40 @@
 # Lake Command In Depth
 
-Lake Command In Depth is a Flutter project for exploring a menu-driven fishing
-blueprint experience focused on Great Lakes trip planning, navigation, and
-species-specific guidance.
+Flutter chartplotter app for Great Lakes fishing intelligence.
 
-The active application lives in `starter_app/`, and this repository root keeps
-the higher-level project notes and GitHub-facing documentation.
+The active app lives in `starter_app/`. The current product direction is the
+dark plastic chartplotter bezel: data controls on the left, full-screen map
+surface, toolbox menu, compass, and live trip telemetry.
 
-## Project Layout
+## Current Focus
 
-- `starter_app/` - the active Flutter application
-- `ANDROID_FLUTTER_COMMANDS.md` - local Android and Flutter command notes
+- Keep the bezel reference intact: dark housing, tight data panel, white layer
+  buttons, orange active glow.
+- Make the app usable before expanding agents or services.
+- Keep work cheap: local code, tests, and docs first. No paid agent swarm until
+  there is a working model and revenue path.
 
-## What It Includes
+## Project Map
 
-- A guided splash flow into a menu-based blueprint interface
-- Trip planning and route-oriented navigation screens
-- Lake overview and species-focused navigation paths
-- Flutter widget tests covering the core entry flow
+- `starter_app/lib/chart_plotter_screen.dart` - main chartplotter UI
+- `starter_app/lib/main.dart` - app entry
+- `starter_app/lib/models/` - observation and scenario data models
+- `starter_app/lib/services/` - mock data and scenario aggregation
+- `starter_app/test/` - widget and service tests
+- `.agents_tmp/PLAN.md` - older visual implementation plan
+- `docs/PROJECT_STATE.md` - current operating state
+- `docs/AGENT_PROTOCOL.md` - rules for future agents
 
-## Getting Started
-
-From the repo root:
+## Commands
 
 ```bash
 cd starter_app
 flutter pub get
+flutter analyze
+flutter test
 flutter run
 ```
 
-To run tests:
+## Git Rule
 
-```bash
-cd starter_app
-flutter test
-```
+Do not commit, push, or merge without captain approval.
