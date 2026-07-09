@@ -72,14 +72,14 @@ class MapIntelligenceAgent {
           intensity = (intensity / cellObservations.length).clamp(0.0, 1.0);
           avgDepth = avgDepth / cellObservations.length;
 
-          final cellLat = cellMinLat + cellLat / 2;
-          final cellLon = cellMinLon + cellLon / 2;
+          final cellCenterLat = cellMinLat + cellLat / 2;
+          final cellCenterLon = cellMinLon + cellLon / 2;
 
           // Store heat map data
           final heatData = FishHeatMapData(
             id: 'heatmap_${species}_${i}_${j}_${DateTime.now().millisecondsSinceEpoch}',
-            latitude: cellLat,
-            longitude: cellLon,
+            latitude: cellCenterLat,
+            longitude: cellCenterLon,
             species: species,
             intensity: intensity,
             depth: avgDepth,

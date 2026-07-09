@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -39,10 +38,7 @@ class LakeGuardScreen extends StatefulWidget {
 class _LakeGuardScreenState extends State<LakeGuardScreen> {
   final MapController _mapController = MapController();
   List<Polygon> _shorelinePolygons = const [];
-  List<Polyline> _bathymetryContours = const [];
   vtr.Theme? _noaaBathymetryTheme;
-  late final Timer _radarRefreshTimer;
-  int _radarRefreshKey = DateTime.now().millisecondsSinceEpoch;
   final vmt.TileProviders _noaaBathymetryProviders = vmt.TileProviders({
     'esri': vmt.NetworkVectorTileProvider(
       urlTemplate:
@@ -90,19 +86,8 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
   void initState() {
     super.initState();
     _loadShorelinePolygons();
-    _loadBathymetryContours();
     _loadNoaaBathymetryStyle();
     _updateRealTimeData();
-    _radarRefreshTimer = Timer.periodic(const Duration(minutes: 5), (_) {
-      if (!mounted) return;
-      setState(() => _radarRefreshKey = DateTime.now().millisecondsSinceEpoch);
-    });
-  }
-
-  @override
-  void dispose() {
-    _radarRefreshTimer.cancel();
-    super.dispose();
   }
 
   Future<void> _loadNoaaBathymetryStyle() async {
@@ -114,55 +99,6 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
 
     if (!mounted) return;
     setState(() => _noaaBathymetryTheme = theme);
-  }
-
-  Future<void> _loadBathymetryContours() async {
-    final source = await rootBundle.loadString(
-      'assets/noaa_lake_michigan_bathymetry_contours.geojson',
-    );
-    final geoJson = jsonDecode(source) as Map<String, dynamic>;
-    final features = geoJson['features'] as List<dynamic>;
-    final contours = <Polyline>[];
-
-    for (final feature in features.cast<Map<String, dynamic>>()) {
-      final geometry = feature['geometry'] as Map<String, dynamic>?;
-      if (geometry == null) continue;
-
-      final type = geometry['type'] as String?;
-      final coordinates = geometry['coordinates'] as List<dynamic>;
-      final lines = type == 'LineString'
-          ? <dynamic>[coordinates]
-          : type == 'MultiLineString'
-          ? coordinates
-          : const <dynamic>[];
-      final properties = feature['properties'] as Map<String, dynamic>? ?? {};
-      final depth = (properties['depth'] as num?)?.toDouble() ?? 0;
-      final isMajorContour = depth.remainder(50).abs() < 0.01;
-
-      for (final line in lines) {
-        final points = (line as List<dynamic>).map((point) {
-          final coordinate = point as List<dynamic>;
-          return LatLng(
-            (coordinate[1] as num).toDouble(),
-            (coordinate[0] as num).toDouble(),
-          );
-        }).toList();
-        if (points.length < 2) continue;
-
-        contours.add(
-          Polyline(
-            points: points,
-            strokeWidth: isMajorContour ? 1.35 : 0.7,
-            color: isMajorContour
-                ? const Color(0xCC183A4D)
-                : const Color(0x7A294D5E),
-          ),
-        );
-      }
-    }
-
-    if (!mounted) return;
-    setState(() => _bathymetryContours = contours);
   }
 
   Future<void> _loadShorelinePolygons() async {
@@ -260,112 +196,45 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(22, 18, 18, 20),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF44494D),
-                      Color(0xFF191C1F),
-                      Color(0xFF080A0C),
-                      Color(0xFF202428),
-                    ],
-                    stops: [0, 0.08, 0.72, 1],
-                  ),
-                  border: Border.all(color: const Color(0xFF686E72), width: 3),
+                  color: const Color(0xFF090B0D),
+                  border: Border.all(color: const Color(0xFF4A4F53), width: 4),
                   borderRadius: BorderRadius.circular(34),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0xFF000000),
-                      blurRadius: 34,
-                      spreadRadius: 4,
-                      offset: Offset(0, 18),
-                    ),
-                    BoxShadow(
-                      color: Color(0x557D8790),
-                      blurRadius: 3,
-                      offset: Offset(0, -2),
+                      color: Colors.black,
+                      blurRadius: 28,
+                      offset: Offset(0, 14),
                     ),
                   ],
                 ),
-                foregroundDecoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(31),
-                  border: Border.all(color: const Color(0x44000000), width: 7),
-                ),
-                child: CustomPaint(
-                  painter: const _PlasticTexturePainter(),
-                  child: Column(
-                    children: [
-                      const SizedBox(
-                        height: 58,
-                        child: Center(
-                          child: Text(
-                            'LakeGuard Pro',
-                            style: TextStyle(
-                              color: Color(0xFFB9BDC1),
-                              fontSize: 31,
-                              fontWeight: FontWeight.w900,
-                              fontStyle: FontStyle.italic,
-                              letterSpacing: -1.2,
-                              shadows: [
-                                Shadow(
-                                  color: Color(0xCC000000),
-                                  blurRadius: 3,
-                                  offset: Offset(2, 3),
-                                ),
-                                Shadow(
-                                  color: Color(0x557E8990),
-                                  offset: Offset(-1, -1),
-                                ),
-                              ],
-                            ),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 58,
+                      child: Center(
+                        child: Text(
+                          'LakeGuard Pro',
+                          style: TextStyle(
+                            color: Color(0xFFB9BDC1),
+                            fontSize: 31,
+                            fontWeight: FontWeight.w900,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: -1.2,
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(7),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                    colors: [
-                                      Color(0xFF080A0C),
-                                      Color(0xFF3F4549),
-                                      Color(0xFF0A0C0E),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(7),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black,
-                                      blurRadius: 12,
-                                      spreadRadius: 4,
-                                      offset: Offset(0, 6),
-                                    ),
-                                    BoxShadow(
-                                      color: Color(0x557E878D),
-                                      blurRadius: 2,
-                                      offset: Offset(0, -2),
-                                    ),
-                                  ],
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(2),
-                                  child: _buildLakeGuardDisplay(),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            SizedBox(width: 104, child: _buildHardwareRail()),
-                          ],
-                        ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(child: _buildLakeGuardDisplay()),
+                          const SizedBox(width: 14),
+                          SizedBox(width: 104, child: _buildHardwareRail()),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -437,44 +306,11 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.starter_app',
             ),
-            if (_moduleStates['Surface Temp'] ?? false)
-              OverlayImageLayer(
-                overlayImages: [
-                  OverlayImage(
-                    bounds: LatLngBounds(
-                      const LatLng(41.5, -88.7),
-                      const LatLng(46.5, -84.3),
-                    ),
-                    imageProvider: const AssetImage(
-                      'assets/noaa_glsea_lake_michigan_sst.png',
-                    ),
-                    opacity: _moduleOpacity['Surface Temp'] ?? 0.9,
-                  ),
-                ],
-              ),
-            PolylineLayer(polylines: _bathymetryContours),
             PolygonLayer(polygons: _shorelinePolygons),
             if (_noaaBathymetryTheme case final theme?)
               vmt.VectorTileLayer(
                 theme: theme,
                 tileProviders: _noaaBathymetryProviders,
-              ),
-            if (_moduleStates['Weather Radar'] ?? false)
-              Opacity(
-                opacity: _moduleOpacity['Weather Radar'] ?? 0.5,
-                child: TileLayer(
-                  key: ValueKey(_radarRefreshKey),
-                  wmsOptions: WMSTileLayerOptions(
-                    baseUrl:
-                        'https://mapservices.weather.noaa.gov/eventdriven/services/radar/radar_base_reflectivity/MapServer/WMSServer?',
-                    layers: const ['1'],
-                    styles: const ['default'],
-                    version: '1.3.0',
-                    transparent: true,
-                    otherParameters: {'refresh': _radarRefreshKey.toString()},
-                  ),
-                  userAgentPackageName: 'com.example.starter_app',
-                ),
               ),
             MarkerLayer(
               markers: [
@@ -555,20 +391,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF25292C), Color(0xFF090B0D), Color(0xFF020303)],
-          ),
-          border: Border.all(color: const Color(0xFF555B5F), width: 1.2),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x99000000),
-              blurRadius: 5,
-              offset: Offset(2, 3),
-            ),
-            BoxShadow(color: Color(0x334F575D), offset: Offset(0, -1)),
-          ],
+          border: Border.all(color: const Color(0xFF51565A), width: 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -628,30 +451,10 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
       child: Container(
         margin: const EdgeInsets.only(right: 2),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isOn && module == 'Species Density'
-                ? const [
-                    Color(0xFF46FF4A),
-                    Color(0xFF12A91A),
-                    Color(0xFF063A09),
-                  ]
-                : const [
-                    Color(0xFF353A3E),
-                    Color(0xFF15181A),
-                    Color(0xFF070809),
-                  ],
-          ),
-          border: Border.all(color: const Color(0xFF666C70), width: 1.5),
-          boxShadow: const [
-            BoxShadow(color: Colors.black, blurRadius: 6, offset: Offset(2, 4)),
-            BoxShadow(
-              color: Color(0x445F686F),
-              blurRadius: 1,
-              offset: Offset(0, -1),
-            ),
-          ],
+          color: isOn && module == 'Species Density'
+              ? const Color(0xFF12DB16)
+              : const Color(0xFF111416),
+          border: Border.all(color: const Color(0xFF555A5E)),
         ),
         child: Column(
           children: [
@@ -701,26 +504,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
               width: double.infinity,
               alignment: Alignment.center,
               margin: const EdgeInsets.fromLTRB(10, 0, 10, 5),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF3A3E41),
-                    Color(0xFF111315),
-                    Color(0xFF050607),
-                  ],
-                ),
-                border: Border.all(color: const Color(0xFF363A3D)),
-                borderRadius: BorderRadius.circular(3),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 4,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
+              color: const Color(0xFF1A1C1E),
               child: Text(
                 isOn ? 'AUTO' : 'OFF',
                 style: const TextStyle(
@@ -737,144 +521,52 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
   }
 
   Widget _buildHardwareRail() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(6, 8, 6, 8),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF373C40),
-            Color(0xFF15181A),
-            Color(0xFF08090A),
-            Color(0xFF25292C),
-          ],
+    return Column(
+      children: [
+        _buildRoundHardwareButton(Icons.arrow_drop_up),
+        const SizedBox(height: 12),
+        _buildRoundHardwareButton(Icons.add, onTap: () => _zoomBy(1)),
+        const SizedBox(height: 12),
+        _buildRoundHardwareButton(Icons.remove, onTap: () => _zoomBy(-1)),
+        const SizedBox(height: 18),
+        SizedBox(width: 88, height: 88, child: _buildBlueKnob()),
+        const Spacer(),
+        Container(
+          width: 84,
+          height: 112,
+          decoration: BoxDecoration(
+            color: const Color(0xFF111315),
+            border: Border.all(color: const Color(0xFF292D30), width: 3),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Icon(Icons.arrow_drop_up, color: Color(0xFF6B6E71), size: 38),
+              Icon(Icons.arrow_drop_up, color: Colors.red, size: 30),
+            ],
+          ),
         ),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFF4C5256), width: 2),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 10,
-            spreadRadius: 2,
-            offset: Offset(4, 7),
-          ),
-          BoxShadow(
-            color: Color(0x555E666B),
-            blurRadius: 2,
-            offset: Offset(-1, -2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          _buildRoundHardwareButton(Icons.arrow_drop_up),
-          const SizedBox(height: 12),
-          _buildRoundHardwareButton(Icons.add, onTap: () => _zoomBy(1)),
-          const SizedBox(height: 12),
-          _buildRoundHardwareButton(Icons.remove, onTap: () => _zoomBy(-1)),
-          const SizedBox(height: 18),
-          SizedBox(width: 88, height: 88, child: _buildBlueKnob()),
-          const Spacer(),
-          Container(
-            width: 84,
-            height: 112,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF454A4D),
-                  Color(0xFF141719),
-                  Color(0xFF050607),
-                ],
-              ),
-              border: Border.all(color: const Color(0xFF0A0B0C), width: 4),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 7,
-                  offset: Offset(3, 5),
-                ),
-                BoxShadow(color: Color(0x555C6469), offset: Offset(-1, -1)),
-              ],
-            ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Icon(
-                  Icons.arrow_drop_up,
-                  color: Color(0xFFFFA044),
-                  size: 38,
-                  shadows: [Shadow(color: Color(0xFFFF5A00), blurRadius: 12)],
-                ),
-                Icon(
-                  Icons.arrow_drop_up,
-                  color: Color(0xFFFF6A28),
-                  size: 30,
-                  shadows: [Shadow(color: Color(0xFFFF3D00), blurRadius: 11)],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: 92,
-            height: 68,
-            child: Container(
-              decoration: BoxDecoration(
+        const SizedBox(height: 12),
+        SizedBox(
+          width: 92,
+          height: 68,
+          child: OutlinedButton(
+            onPressed: _showMenu,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFFFF7043),
+              side: const BorderSide(color: Color(0xFFFF6A28), width: 4),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x66FF3D00),
-                    blurRadius: 24,
-                    spreadRadius: 5.6,
-                  ),
-                  BoxShadow(
-                    color: Color(0xDDFF6A00),
-                    blurRadius: 12,
-                    spreadRadius: 2.4,
-                  ),
-                  BoxShadow(
-                    color: Color(0xFFFFC36A),
-                    blurRadius: 3.2,
-                    spreadRadius: 0.8,
-                  ),
-                  BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 8,
-                    offset: Offset(3, 6),
-                  ),
-                ],
-              ),
-              child: OutlinedButton(
-                onPressed: _showMenu,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFFFE0A8),
-                  backgroundColor: const Color(0xFF111315),
-                  side: const BorderSide(color: Color(0xFFFFB64D), width: 3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'MENU',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    shadows: [
-                      Shadow(color: Color(0xFFFFF0C8), blurRadius: 2),
-                      Shadow(color: Color(0xFFFF8A1F), blurRadius: 6.4),
-                      Shadow(color: Color(0xFFFF3D00), blurRadius: 14.4),
-                    ],
-                  ),
-                ),
               ),
             ),
+            child: const Text(
+              'MENU',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -887,74 +579,13 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
         height: 64,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const RadialGradient(
-            center: Alignment(0.42, -0.5),
-            radius: 1.05,
-            colors: [
-              Color(0xFF858B8F),
-              Color(0xFF303437),
-              Color(0xFF08090A),
-              Color(0xFF020303),
-            ],
-            stops: [0, 0.3, 0.76, 1],
-          ),
-          border: Border.all(color: const Color(0xFFFFA43B), width: 4),
+          color: const Color(0xFF111315),
+          border: Border.all(color: const Color(0xFF292D30), width: 3),
           boxShadow: const [
-            BoxShadow(
-              color: Color(0x55FF3D00),
-              blurRadius: 22.4,
-              spreadRadius: 5.6,
-            ),
-            BoxShadow(
-              color: Color(0xCCFF6A00),
-              blurRadius: 11.2,
-              spreadRadius: 2.4,
-            ),
-            BoxShadow(
-              color: Color(0xFFFFC36A),
-              blurRadius: 3.2,
-              spreadRadius: 0.4,
-            ),
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 9,
-              spreadRadius: 1,
-              offset: Offset(3, 6),
-            ),
-            BoxShadow(
-              color: Color(0x665F686D),
-              blurRadius: 2,
-              offset: Offset(-2, -2),
-            ),
+            BoxShadow(color: Colors.black, blurRadius: 8, offset: Offset(0, 4)),
           ],
         ),
-        child: Container(
-          margin: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment(0.55, -1),
-              end: Alignment(-0.15, 1),
-              colors: [Color(0x447F8A90), Color(0x00121517), Color(0xAA000000)],
-              stops: [0, 0.45, 1],
-            ),
-            border: Border.all(color: const Color(0xFFFFE0A8), width: 1.5),
-            boxShadow: const [
-              BoxShadow(color: Color(0xCCFF8A1F), blurRadius: 5.6),
-            ],
-          ),
-          child: Icon(
-            icon,
-            color: const Color(0xFFFFE8BE),
-            size: 36,
-            shadows: const [
-              Shadow(color: Color(0xFFFFFFFF), blurRadius: 2),
-              Shadow(color: Color(0xFFFF8A1F), blurRadius: 6.4),
-              Shadow(color: Color(0xFFFF3D00), blurRadius: 12.8),
-              Shadow(color: Colors.black, blurRadius: 3, offset: Offset(1, 2)),
-            ],
-          ),
-        ),
+        child: Icon(icon, color: const Color(0xFF85898C), size: 38),
       ),
     );
   }
@@ -1276,78 +907,11 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
       child: Container(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const RadialGradient(
-            center: Alignment(0.42, -0.5),
-            radius: 1.05,
-            colors: [
-              Color(0xFF71818B),
-              Color(0xFF1C2D36),
-              Color(0xFF05090B),
-              Color(0xFF010203),
-            ],
-            stops: [0, 0.32, 0.77, 1],
-          ),
-          border: Border.all(color: const Color(0xFF050708), width: 6),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x550087FF),
-              blurRadius: 28.8,
-              spreadRadius: 7.2,
-            ),
-            BoxShadow(
-              color: Color(0xDD00D9FF),
-              blurRadius: 17.6,
-              spreadRadius: 3.2,
-            ),
-            BoxShadow(
-              color: Color(0xFFB8F8FF),
-              blurRadius: 4,
-              spreadRadius: 0.8,
-            ),
-            BoxShadow(color: Colors.black, blurRadius: 9, offset: Offset(4, 7)),
-            BoxShadow(
-              color: Color(0x8879858B),
-              blurRadius: 2,
-              offset: Offset(-2, -2),
-            ),
-          ],
+          color: const Color(0xFF09151B),
+          border: Border.all(color: Colors.cyan, width: 5),
+          boxShadow: const [BoxShadow(color: Colors.cyan, blurRadius: 18)],
         ),
-        child: Container(
-          margin: const EdgeInsets.all(5),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment(0.55, -1),
-              end: Alignment(-0.15, 1),
-              colors: [Color(0x555C7683), Color(0x00121D22), Color(0xB8000000)],
-              stops: [0, 0.45, 1],
-            ),
-            border: Border.all(color: const Color(0xFFC8FBFF), width: 3),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0xFF00E5FF),
-                blurRadius: 10.4,
-                spreadRadius: 1.6,
-              ),
-            ],
-          ),
-          child: const Center(
-            child: Icon(
-              Icons.zoom_in,
-              color: Color(0xFF9CF5FF),
-              size: 30,
-              shadows: [
-                Shadow(color: Colors.white, blurRadius: 2),
-                Shadow(color: Color(0xFF00E5FF), blurRadius: 7.2),
-                Shadow(
-                  color: Colors.black,
-                  blurRadius: 3,
-                  offset: Offset(1, 2),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: const Center(child: Icon(Icons.zoom_in, color: Colors.cyan)),
       ),
     );
   }
@@ -1404,35 +968,6 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
       ),
     );
   }
-}
-
-class _PlasticTexturePainter extends CustomPainter {
-  const _PlasticTexturePainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final grain = Paint()
-      ..color = const Color(0x0CFFFFFF)
-      ..strokeWidth = 0.7;
-    final shadowGrain = Paint()
-      ..color = const Color(0x12000000)
-      ..strokeWidth = 0.8;
-
-    for (double y = 4; y < size.height; y += 7) {
-      final offset = (y ~/ 7).isEven ? 0.0 : 3.5;
-      for (double x = offset; x < size.width; x += 11) {
-        canvas.drawLine(Offset(x, y), Offset(x + 2.5, y + 0.8), grain);
-        canvas.drawLine(
-          Offset(x + 1, y + 1.8),
-          Offset(x + 3.2, y + 2.4),
-          shadowGrain,
-        );
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _PlasticTexturePainter oldDelegate) => false;
 }
 
 class _MapSquareButton extends StatelessWidget {
@@ -1530,105 +1065,33 @@ class _OrangeKnobPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.shortestSide / 2 - 4;
 
-    canvas.drawCircle(
-      center + const Offset(2.5, 3.5),
-      radius + 2,
-      Paint()
-        ..color = const Color(0xCC000000)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
-    );
-
     if (active) {
-      canvas.drawCircle(
-        center,
-        radius + 4,
-        Paint()
-          ..color = const Color(0x33FF3D00)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12),
-      );
       canvas.drawCircle(
         center,
         radius + 3,
         Paint()
           ..color = const Color(0x77FF6A00)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 7.2),
-      );
-      canvas.drawCircle(
-        center,
-        radius + 1,
-        Paint()
-          ..color = const Color(0xCCFFC36A)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.4
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2.4),
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9),
       );
     }
 
     canvas.drawCircle(
       center,
-      radius + 2,
-      Paint()
-        ..shader = const LinearGradient(
-          begin: Alignment.topRight,
-          end: Alignment(-0.18, 1),
-          colors: [Color(0xFF8A8F91), Color(0xFF17191A), Color(0xFF020303)],
-        ).createShader(Rect.fromCircle(center: center, radius: radius + 2)),
-    );
-
-    canvas.drawCircle(
-      center,
-      radius - 2,
+      radius,
       Paint()
         ..shader = const RadialGradient(
-          center: Alignment(0.45, -0.5),
-          radius: 1.05,
-          colors: [
-            Color(0xFF666A6D),
-            Color(0xFF252728),
-            Color(0xFF090A0A),
-            Color(0xFF010101),
-          ],
+          center: Alignment(-0.35, -0.35),
+          colors: [Color(0xFF2D2D2D), Color(0xFF090909), Color(0xFF000000)],
         ).createShader(Rect.fromCircle(center: center, radius: radius)),
     );
     canvas.drawCircle(
       center,
-      radius - 1,
+      radius,
       Paint()
         ..color = active ? const Color(0xFFFF8A1A) : const Color(0xFF5A3B17)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
+        ..strokeWidth = 5,
     );
-
-    canvas.drawArc(
-      Rect.fromCircle(center: center, radius: radius - 5),
-      -math.pi * 0.45,
-      math.pi * 0.40,
-      false,
-      Paint()
-        ..color = const Color(0x88FFFFFF)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.4
-        ..strokeCap = StrokeCap.round,
-    );
-
-    for (var index = 0; index < 9; index++) {
-      final tickAngle = -math.pi * 0.75 + index * (math.pi * 1.5 / 8);
-      final tickStart = Offset(
-        center.dx + (radius + 1) * math.cos(tickAngle),
-        center.dy + (radius + 1) * math.sin(tickAngle),
-      );
-      final tickEnd = Offset(
-        center.dx + (radius + 4) * math.cos(tickAngle),
-        center.dy + (radius + 4) * math.sin(tickAngle),
-      );
-      canvas.drawLine(
-        tickStart,
-        tickEnd,
-        Paint()
-          ..color = active ? const Color(0xFFFFB15A) : const Color(0xFF5C5F61)
-          ..strokeWidth = 1.2,
-      );
-    }
 
     final angle = -math.pi * 0.75 + value * math.pi * 1.5;
     final end = Offset(
@@ -1643,15 +1106,7 @@ class _OrangeKnobPainter extends CustomPainter {
         ..strokeWidth = 3
         ..strokeCap = StrokeCap.round,
     );
-    canvas.drawCircle(
-      center,
-      5,
-      Paint()
-        ..shader = const RadialGradient(
-          center: Alignment(-0.4, -0.4),
-          colors: [Color(0xFF5D6163), Color(0xFF050505)],
-        ).createShader(Rect.fromCircle(center: center, radius: 5)),
-    );
+    canvas.drawCircle(center, 5, Paint()..color = const Color(0xFF050505));
   }
 
   @override

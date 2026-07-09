@@ -134,7 +134,6 @@ class DepthRange {
 /// Central event bus for Lake Command agent communication
 class LakeCommandEventBus extends ChangeNotifier {
   final List<LakeCommandEvent> _eventHistory = [];
-  final List<VoidCallback> _listeners = [];
 
   /// Get the complete event history
   List<LakeCommandEvent> get eventHistory => List.unmodifiable(_eventHistory);

@@ -437,21 +437,6 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.starter_app',
             ),
-            if (_moduleStates['Surface Temp'] ?? false)
-              OverlayImageLayer(
-                overlayImages: [
-                  OverlayImage(
-                    bounds: LatLngBounds(
-                      const LatLng(41.5, -88.7),
-                      const LatLng(46.5, -84.3),
-                    ),
-                    imageProvider: const AssetImage(
-                      'assets/noaa_glsea_lake_michigan_sst.png',
-                    ),
-                    opacity: _moduleOpacity['Surface Temp'] ?? 0.9,
-                  ),
-                ],
-              ),
             PolylineLayer(polylines: _bathymetryContours),
             PolygonLayer(polygons: _shorelinePolygons),
             if (_noaaBathymetryTheme case final theme?)

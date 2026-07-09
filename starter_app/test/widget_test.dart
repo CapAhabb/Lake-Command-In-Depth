@@ -7,21 +7,24 @@ void main() {
   testWidgets('chart plotter loads with all data layers', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: ChartPlotterScreen(),
-      ),
-    );
+    tester.view.physicalSize = const Size(1280, 720);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(const MaterialApp(home: ChartPlotterScreen()));
     await tester.pumpAndSettle();
 
-    // Verify the app name/logo is present
-    expect(find.text('LAKE COMMAND'), findsOneWidget);
-    expect(find.text('IN DEPTH'), findsOneWidget);
-    
-    // Verify GPS coordinates are displayed
-    expect(find.textContaining('42.4851° N'), findsOneWidget);
-    
-    // Verify overlay toolbox button exists
-    expect(find.byIcon(Icons.layers), findsOneWidget);
+    // Verify the gptplotter-style app labels are present
+    expect(find.text('LakeGuard Pro'), findsOneWidget);
+    expect(find.text('AquaPlotter'), findsOneWidget);
+
+    // Verify GPS status is displayed
+    expect(find.text('GPS'), findsOneWidget);
+
+    // Verify interactive layer controls are present
+    expect(find.text('ON'), findsWidgets);
+    expect(find.text('OFF'), findsWidgets);
+    expect(find.text('MENU'), findsOneWidget);
   });
 }

@@ -180,8 +180,6 @@ class FishIntelligenceModel {
     final depths = _observations.map((o) => o.depth).toList();
     depths.sort();
 
-    final minDepth = depths.first;
-    final maxDepth = depths.last;
     final meanDepth = depths.reduce((a, b) => a + b) / depths.length;
 
     // Use mean ± std deviation as range

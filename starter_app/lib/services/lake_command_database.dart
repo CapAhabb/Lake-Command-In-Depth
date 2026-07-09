@@ -97,8 +97,6 @@ class LakeCommandDatabase extends ChangeNotifier {
         DateTime.now().difference(observation.observedAt).inHours;
     final freshnessHours =
         observation.confidenceMetadata?.freshnessHours ?? 24;
-    final decayRate = 0.05; // 5% per hour
-
     final decayFactor = (1 - (hoursSinceObservation / freshnessHours))
         .clamp(0.0, 1.0);
     final baseConfidence =
