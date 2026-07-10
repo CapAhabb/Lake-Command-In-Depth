@@ -53,7 +53,6 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
   };
 
   double _plotterZoom = 15.0;
-  final bool _plotterEnabled = true;
 
   // Fake GPS data (will be replaced with real)
   String _gpsStatus = "3D Fix";
@@ -94,11 +93,6 @@ class _LakeGuardScreenState extends State<LakeGuardScreen> {
     });
   }
 
-  void _updateOpacity(String module, double value) {
-    setState(() {
-      _moduleOpacity[module] = value;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
