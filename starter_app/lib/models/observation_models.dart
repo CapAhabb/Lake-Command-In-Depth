@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Michael E. Anderson. All rights reserved.
+
 class GeoPoint {
   const GeoPoint({required this.latitude, required this.longitude});
 

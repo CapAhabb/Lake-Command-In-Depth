@@ -91,3 +91,11 @@ flutter analyze
 flutter test
 flutter run
 ```
+
+---
+
+## Copyright
+
+Copyright © 2026 Michael E. Anderson. All rights reserved.
+
+This repository is published for portfolio, evaluation, and demonstration purposes. See [LICENSE](LICENSE) for usage restrictions.

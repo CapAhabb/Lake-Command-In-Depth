@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Michael E. Anderson. All rights reserved.
+
 import 'package:flutter/material.dart';
 
 import 'chart_plotter_screen.dart';

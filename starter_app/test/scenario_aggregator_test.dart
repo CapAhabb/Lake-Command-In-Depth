@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Michael E. Anderson. All rights reserved.
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:starter_app/models/observation_models.dart';
 import 'package:starter_app/services/scenario_aggregator.dart';
