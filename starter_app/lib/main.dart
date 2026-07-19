@@ -12,6 +12,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:vector_map_tiles/vector_map_tiles.dart' as vmt;
 import 'package:vector_tile_renderer/vector_tile_renderer.dart' as vtr;
 
+import 'services/nws_weather_service.dart';
 import 'services/seagull_current_service.dart';
 
 void main() {
@@ -43,6 +44,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
     with SingleTickerProviderStateMixin {
   final MapController _mapController = MapController();
   final SeagullCurrentService _seagullCurrentService = SeagullCurrentService();
+  final NwsWeatherService _nwsWeatherService = NwsWeatherService();
   List<Polygon> _shorelinePolygons = const [];
   List<Polyline> _bathymetryContours = const [];
   List<_CurrentParticle> _currentParticles = const [];
@@ -60,7 +62,9 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
   Color _userAccentColor = const Color(0xFFFF8A1A);
   final bool _membershipActive = false;
   int _seagullRequestId = 0;
+  int _nwsRequestId = 0;
   String _currentSourceLabel = 'SEAGULL • CONNECTING';
+  String _nwsStatusLabel = 'NWS • CONNECTING';
   vtr.Theme? _noaaBathymetryTheme;
   late final Timer _radarRefreshTimer;
   late final AnimationController _currentAnimationController;
@@ -101,12 +105,11 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
 
   double _plotterZoom = 7.0;
 
-  // Fake GPS data (will be replaced with real)
-  String _gpsStatus = "3D Fix";
-  String _time = "2:34 PM";
-  double _speed = 2.8;
-  final double _depth = 47.0;
-  final double _waterTemp = 68.4;
+  String _gpsStatus = 'LOCATING';
+  String _time = '--';
+  double? _speedMph;
+  double? _depthFt;
+  double? _waterTempF;
 
   LatLng _currentPosition = const LatLng(43.4, -86.7);
 
@@ -126,6 +129,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
       if (!mounted) return;
       setState(() => _radarRefreshKey = DateTime.now().millisecondsSinceEpoch);
       _loadSeagullData();
+      _updateRealTimeData();
     });
   }
 
@@ -134,6 +138,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
     _radarRefreshTimer.cancel();
     _currentAnimationController.dispose();
     _seagullCurrentService.close();
+    _nwsWeatherService.close();
     super.dispose();
   }
 
@@ -350,8 +355,36 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
       _windObservations = winds;
       _surfaceTemperatureObservations = temperatures;
       _seagullForecast = forecast;
+      _depthFt = _currentDepthFeet(observations);
+      _waterTempF = _latestSurfaceTemperatureF(temperatures);
       _currentParticles = _buildCurrentParticles(_currentMaskAreas, vectors);
       _currentSourceLabel = currentLabel;
+    });
+  }
+
+  Future<void> _loadNwsWeatherData() async {
+    final requestId = ++_nwsRequestId;
+    if (mounted) {
+      setState(() => _nwsStatusLabel = 'NWS • CONNECTING');
+    }
+
+    final summary = await _nwsWeatherService.fetchHourlySummary(
+      latitude: _currentPosition.latitude,
+      longitude: _currentPosition.longitude,
+    );
+    if (!mounted || requestId != _nwsRequestId) return;
+
+    final label = summary == null
+        ? 'NWS • UNAVAILABLE'
+        : [
+            'NWS',
+            '${_formatDecimal(summary.temperatureF, fractionDigits: 0)}°F',
+            if ((summary.windDirection ?? '').isNotEmpty) summary.windDirection,
+            '${_formatDecimal(summary.windSpeedMph, fractionDigits: 0)} mph',
+          ].join(' • ');
+
+    setState(() {
+      _nwsStatusLabel = label;
     });
   }
 
@@ -474,14 +507,36 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
     });
 
     // GPS
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (serviceEnabled) {
-      Position position = await Geolocator.getCurrentPosition();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      if (!mounted) return;
+      setState(() => _gpsStatus = 'GPS OFF');
+      return;
+    }
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      if (!mounted) return;
+      setState(() => _gpsStatus = 'NO PERMISSION');
+      return;
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
-        _speed = position.speed * 2.23694; // m/s → mph
-        _gpsStatus = "3D Fix";
+        _speedMph = position.speed * 2.23694;
+        _gpsStatus = 'FIX ${position.accuracy.toStringAsFixed(0)}m';
       });
+      _loadNwsWeatherData();
+    } on Exception {
+      if (!mounted) return;
+      setState(() => _gpsStatus = 'GPS ERROR');
     }
   }
 
@@ -844,6 +899,14 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
               onTap: _loadSeagullData,
             ),
           ),
+        Positioned(
+          left: 8,
+          top: 120,
+          child: _CurrentSourceBadge(
+            label: _nwsStatusLabel,
+            onTap: _loadNwsWeatherData,
+          ),
+        ),
         const Positioned(
           left: 10,
           bottom: 10,
@@ -865,20 +928,20 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
         children: [
           _buildTelemetryCard(
             'Depth:',
-            _depth.toStringAsFixed(0),
-            suffix: 'ft',
+            _formatDecimal(_depthFt, fractionDigits: 0),
+            suffix: ' ft',
             flex: 6,
           ),
           _buildTelemetryCard(
             'Water Temp:',
-            _waterTemp.toStringAsFixed(1),
-            suffix: '°F',
+            _formatDecimal(_waterTempF),
+            suffix: ' °F',
             flex: 5,
           ),
           _buildTelemetryCard(
             'Speed:',
-            _speed.toStringAsFixed(1),
-            suffix: 'mph',
+            _formatDecimal(_speedMph),
+            suffix: ' mph',
             flex: 5,
           ),
           _buildTelemetryCard('Time', _time, flex: 4),
@@ -1157,7 +1220,7 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
             blurRadius: 10,
             spreadRadius: 2,
             offset: Offset(4, 7),
-          ),
+          ),                                              
           BoxShadow(
             color: Color(0x555E666B),
             blurRadius: 2,
@@ -1514,15 +1577,15 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
                                             children: [
                                               _buildReading(
                                                 "Depth:",
-                                                "${_depth.toStringAsFixed(0)} ft",
+                                                "${_formatDecimal(_depthFt, fractionDigits: 0)} ft",
                                               ),
                                               _buildReading(
                                                 "Water Temp:",
-                                                "${_waterTemp.toStringAsFixed(1)}°F",
+                                                "${_formatDecimal(_waterTempF)}°F",
                                               ),
                                               _buildReading(
                                                 "Speed:",
-                                                "${_speed.toStringAsFixed(1)} mph",
+                                                "${_formatDecimal(_speedMph)} mph",
                                               ),
                                               _buildReading("Time:", _time),
                                               _buildReading("GPS:", _gpsStatus),
@@ -1826,6 +1889,29 @@ class _LakeGuardScreenState extends State<LakeGuardScreen>
         ),
       ),
     );
+  }
+
+  double? _currentDepthFeet(List<SeagullCurrentObservation> observations) {
+    for (final observation in observations) {
+      if (observation.depthMeters == null) continue;
+      return observation.depthMeters! * 3.28084;
+    }
+    return null;
+  }
+
+  double? _latestSurfaceTemperatureF(
+    List<SeagullScalarObservation> observations,
+  ) {
+    if (observations.isEmpty) return null;
+    final latest = observations.reduce(
+      (a, b) => a.observedAt.isAfter(b.observedAt) ? a : b,
+    );
+    return (latest.value - 273.15) * 9 / 5 + 32;
+  }
+
+  String _formatDecimal(double? value, {int fractionDigits = 1}) {
+    if (value == null) return '—';
+    return value.toStringAsFixed(fractionDigits);
   }
 }
 
