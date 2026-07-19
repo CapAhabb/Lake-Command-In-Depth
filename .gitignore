@@ -2,6 +2,7 @@
 
 .agents/
 .codex/
+.vercel/
 .vscode/
 
 # Files and directories created by pub
