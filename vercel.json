@@ -1,4 +1,12 @@
 {
+  "buildCommand": "cd starter_app && ./vercel-build.sh",
+  "outputDirectory": "starter_app/build/web",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
